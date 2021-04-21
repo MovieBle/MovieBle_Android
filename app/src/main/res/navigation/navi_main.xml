@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/navi_main"
+    app:startDestination="@id/movieListFragment">
+
+    <fragment
+        android:id="@+id/movieListFragment"
+        android:label="영화 리스트"
+        tools:layout="@layout/fragment_moive_list"
+        android:name="com.example.movie.ui.fragment.MovieListFragment"/>
+    <fragment
+        android:id="@+id/profileFragment"
+        tools:layout="@layout/fragment_profile"
+        android:label="프로필"
+        android:name="com.example.movie.ui.fragment.ProfileFragment"/>
+
+    <fragment
+        android:id="@+id/recentPostFragment"
+        android:label="최근에 본 포스트"
+        tools:layout="@layout/fragment_recent"
+        android:name="com.example.movie.ui.fragment.RecentFragment"/>
+    <fragment
+        android:id="@+id/searchPostFragment"
+        android:label="영화 찾기"
+        tools:layout="@layout/fragment_search_post"
+        android:name="com.example.movie.ui.fragment.SearchPostFragment"/>
+</navigation>
