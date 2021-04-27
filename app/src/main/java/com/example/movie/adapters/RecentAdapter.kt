@@ -3,16 +3,40 @@ package com.example.movie.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.example.movie.untils.App
+import com.example.movie.R
+import com.example.movie.data.Result
 import com.example.movie.databinding.RecentRowLayoutBinding
 
-class RecentAdapter : RecyclerView.Adapter<RecentAdapter.RecentHolder>() {
+
+@Suppress("DEPRECATION")
+class RecentAdapter() : RecyclerView.Adapter<RecentAdapter.RecentHolder>() {
+
+
+    companion object {
+        private val recentMovieList = emptyList<Result>()
+
+    }
 
     class RecentHolder(private val binding: RecentRowLayoutBinding) :
-        RecyclerView.ViewHolder(binding.root) {
+            RecyclerView.ViewHolder(binding.root) {
 
-        fun bind(){
+        fun bind(result: Result) {
+            binding.result = result
+            // 데이터 내부에 변경 사항이있을 때마다 레이아웃을 업데이트함
+            // 바인딩을 즉시 실행할 때 -> 업데이트가 될 때 ??
+            binding.executePendingBindings()
 
+            var url = "https://image.tmdb.org/t/p/w500" + recentMovieList[position].poster_path
+
+            Glide.with(App.instance)
+                    .load(url)
+                    .centerCrop()
+                    .placeholder(R.drawable.test_post)
+                    .into(binding.recentPostImage)
         }
+
 
         companion object {
             fun from(parent: ViewGroup): RecentHolder {
@@ -30,11 +54,13 @@ class RecentAdapter : RecyclerView.Adapter<RecentAdapter.RecentHolder>() {
 
     override fun onBindViewHolder(holder: RecentHolder, position: Int) {
 
-        holder.bind()
+        val currentRecipe = recentMovieList[position]
+        holder.bind(currentRecipe)
+
 
     }
 
     override fun getItemCount(): Int {
-        TODO("Not yet implemented")
+        return recentMovieList.size
     }
 }
