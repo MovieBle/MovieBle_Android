@@ -9,21 +9,48 @@
         android:id="@+id/movieListFragment"
         android:label="영화 리스트"
         tools:layout="@layout/fragment_moive_list"
-        android:name="com.example.movie.ui.fragment.MovieListFragment"/>
+        android:name="com.example.movie.ui.fragment.MovieListFragment">
+        <action
+            android:id="@+id/action_movieListFragment_to_exampleMovieFragment"
+            app:destination="@id/exampleMovieFragment" />
+    </fragment>
     <fragment
         android:id="@+id/profileFragment"
         tools:layout="@layout/fragment_profile"
         android:label="프로필"
-        android:name="com.example.movie.ui.fragment.ProfileFragment"/>
+        android:name="com.example.movie.ui.fragment.ProfileFragment">
+        <action
+            android:id="@+id/action_profileFragment_to_exampleMovieFragment"
+            app:destination="@id/exampleMovieFragment" />
+    </fragment>
 
-    <fragment
-        android:id="@+id/recentPostFragment"
-        android:label="최근에 본 포스트"
-        tools:layout="@layout/fragment_recent"
-        android:name="com.example.movie.ui.fragment.RecentFragment"/>
+
     <fragment
         android:id="@+id/searchPostFragment"
         android:label="영화 찾기"
         tools:layout="@layout/fragment_search_post"
-        android:name="com.example.movie.ui.fragment.SearchPostFragment"/>
+        android:name="com.example.movie.ui.fragment.SearchPostFragment">
+        <action
+            android:id="@+id/action_searchPostFragment_to_exampleMovieFragment"
+            app:destination="@id/exampleMovieFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/exampleMovieFragment"
+        android:label="영화"
+        tools:layout="@layout/fragment_example_movie"
+        android:name="com.example.movie.ui.fragment.ExampleMovieFragment">
+        <argument
+            android:name="currentItem"
+            app:argType="com.example.movie.data.Result" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_to_movieListFragment"
+            app:destination="@id/movieListFragment" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_to_searchPostFragment"
+            app:destination="@id/searchPostFragment" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_to_profileFragment"
+            app:destination="@id/profileFragment" />
+    </fragment>
+
 </navigation>
