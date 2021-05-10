@@ -1,6 +1,7 @@
 package com.example.movie.adapters
 
 import android.content.Context
+import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -11,7 +12,6 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.MovieCase
-import com.example.movie.untils.App
 import com.example.movie.R
 import com.example.movie.data.Result
 import com.example.movie.data.database.MovieEntity
@@ -19,8 +19,8 @@ import com.example.movie.databinding.MovieListRowLayoutBinding
 import com.example.movie.databinding.SearchMovieRowBinding
 import com.example.movie.ui.fragment.MovieListFragmentDirections
 import com.example.movie.ui.fragment.SearchPostFragmentDirections
+import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
-
 import com.example.movie.untils.Constants.Companion.TAG
 
 
@@ -32,15 +32,15 @@ class MovieListAdapter(
 ) :
         RecyclerView.Adapter<MovieListAdapter.BaseViewHolder<*>>(), Filterable {
 
-    var searchList: MutableList<Result> = ArrayList()
-
+    var searchList: List<Result> = mutableListOf()
+    private var listFilter: MovieListFilter? = null
     private var likeList = emptyList<MovieEntity>()
     abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bind(item: Result)
     }
 
 
-    inner class MovieHolder (
+    inner class MovieHolder(
             val binding: MovieListRowLayoutBinding
 
     ) :
@@ -49,7 +49,7 @@ class MovieListAdapter(
 
         override fun bind(item: Result) {
 
-            var url = BASE_IMG_URL + item.poster_path
+            val url = BASE_IMG_URL + item.poster_path
 
             binding.pagerItemText.text = item.title
 
@@ -180,43 +180,53 @@ class MovieListAdapter(
         this.likeList = movieData
         notifyDataSetChanged()
     }
-    fun setData(movieData : List<Result>){
+    fun setData(movieData: List<Result>){
     this.movieList = movieData
     notifyDataSetChanged()
     }
 
     override fun getFilter(): Filter {
-        return articleFilter
+        if (listFilter == null) listFilter = MovieListFilter(this, movieList)
+
+        return listFilter as MovieListFilter
 
     }
 
 
+    private class MovieListFilter(private val listAdapter: MovieListAdapter, private val originalData: List<Result>) : Filter() {
 
-    private val articleFilter: Filter = object : Filter() {
+        // List 와 MutableList의 차이점은?
+        private val filteredData: MutableList<Result>
 
-        override fun performFiltering(constraint: CharSequence?): FilterResults {
-            val charString = constraint.toString()
-            if (charString.isEmpty()) {
-                movieList = searchList
+        override fun performFiltering(constraint: CharSequence): FilterResults {
+            filteredData.clear()
+            val results = FilterResults()
+            Log.d("performFiltering: ", constraint.toString())
+            if (TextUtils.isEmpty(constraint.toString())) {
+                filteredData.addAll(originalData)
             } else {
-                val filteredList = ArrayList<Result>()
-                //이부분에서 원하는 데이터를 검색할 수 있음
-                for (row in searchList) {
-                    if (row.title.toLowerCase().contains(charString.toLowerCase()) ||row.poster_path.toLowerCase().contains(charString.toLowerCase())
-                            ) {
-                        filteredList.add(row)
+                val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
+                for (user in originalData) {
+                    // set condition for filter here
+                    if (user.title.toLowerCase().contains(filterPattern)) {
+                        filteredData.add(user)
                     }
                 }
-                movieList = filteredList
             }
-            val results = FilterResults()
-            results.values = movieList
+            results.values = filteredData
+            results.count = filteredData.size
             return results
         }
 
-        override fun publishResults(constraint: CharSequence?, results: FilterResults?) {
-            searchList = results?.values as ArrayList<Result>
-            notifyDataSetChanged()
+        override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
+
+            //listAdapter.getData().clear();
+            listAdapter.setData(filterResults.values as List<Result>)
+            listAdapter.notifyDataSetChanged()
+        }
+
+        init {
+            filteredData = ArrayList()
         }
     }
 
