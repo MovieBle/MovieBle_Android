@@ -3,126 +3,178 @@ package com.example.movie.ui.fragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.util.Log
-import android.view.LayoutInflater
-import android.view.View
-import android.view.ViewGroup
-import android.widget.ImageButton
+import android.view.*
 import android.widget.TextView
-import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.movie.R
-import com.example.movie.data.Result
+import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.data.database.MovieEntity
 import com.example.movie.databinding.FragmentExampleMovieBinding
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.viewmodels.DatabaseViewModel
+import com.google.android.material.snackbar.Snackbar
 import kotlinx.coroutines.InternalCoroutinesApi
 
 @InternalCoroutinesApi
 
 class ExampleMovieFragment : Fragment() {
-    var i = 0
+  
 
+    // 저장 -> movieSave true
+    // 삭제 -> movieSave false
+    
+    // liveData로 비동기처리하면서 movieSave 상태에 따라 snackBar에 뜨는 text변경
     private var _binding: FragmentExampleMovieBinding? = null
     private val binding get() = _binding!!
     private val args by navArgs<ExampleMovieFragmentArgs>()
 
     private val databaseViewModel: DatabaseViewModel by viewModels()
-    private lateinit var like_img: ImageButton
-
+    var mLikeAdapter: MovieListAdapter? = null
     private lateinit var contents: TextView
     private lateinit var examText: TextView
 
+    private var movieSave = false
+    private var movieId: Int = 0
 
-    var likeList = mutableListOf<Result>()
 
     @SuppressLint("ResourceAsColor")
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
     ): View {
 
         _binding = FragmentExampleMovieBinding.inflate(inflater, container, false)
 
-        Log.d(TAG, "onCreateView: ${BASE_IMG_URL + args.currentItem.poster_path}")
 
 
-        Glide.with(App.instance)
-                .load(BASE_IMG_URL + args.currentItem.poster_path)
-                .centerCrop()
-                .placeholder(R.drawable.test_post)
-                .into(binding.examImg)
+
+        imgLoad()
 
 
         contents = binding.examContents
         examText = binding.examTitle
-        like_img = binding.examLikeImg
 
-        like_img.setBackgroundColor(R.color.black)
 
         contents.text = args.currentItem.overview
         examText.text = args.currentItem.title
 
 
-        Log.d(TAG, "onCreateView: $examText")
 
 
-        like_img.setOnClickListener {
 
-            if (i == 0) {
-                like_img.setBackgroundColor(R.color.red)
-
-                insertMovie()
-                i++
-            } else {
-                like_img.setBackgroundColor(R.color.black)
-                deleteMovie()
-                i--
-            }
-
-        }
-
+        setHasOptionsMenu(true)
         return binding.root
     }
 
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_exam, menu)
+        val menuItem = menu.findItem(R.id.menu_action_star)
+        checkSaveMovie(menuItem)
+    }
 
-    private fun insertMovie() {
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        if (item.itemId == R.id.menu_action_star && !movieSave) {
+            insertMovie(item)
+
+        } else if (item.itemId == R.id.menu_action_star && movieSave) {
+            deleteMovie(item)
+        } else {
+            return super.onOptionsItemSelected(item)
+        }
+        return super.onOptionsItemSelected(item)
+    }
+
+    private fun checkSaveMovie(menuItem: MenuItem) {
+
+        // ROOM 과 jSON 객체로 받아온 id 값을 비교
+        databaseViewModel.getAllData.observe(this, { favoritesEntity ->
+            try {
+                for (savedRecipe in favoritesEntity) {
+                    if (savedRecipe.result.id == args.currentItem.id) {
+
+                        changeMenuItemColor(menuItem, R.color.yellow)
+                        movieId = savedRecipe.id
+                        movieSave = true
+                    } else {
+                        changeMenuItemColor(menuItem, R.color.white)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("DetailsActivity", e.message.toString())
+            }
+        })
+    }
+
+    //데이터 저장
+    private fun insertMovie(item: MenuItem) {
         val movieData = MovieEntity(
-
-                BASE_IMG_URL + args.currentItem.poster_path,
-
-                args.currentItem.title
+            movieId,
+            args.currentItem
 
         )
+
+        movieSave = true
         databaseViewModel.insertData(movieData)
 
+        mLikeAdapter?.setLikeData(listOf(movieData))
 
-        Toast.makeText(requireContext(), "포스트가 추가됩니다.", Toast.LENGTH_SHORT).show()
-        Log.d(TAG, "insertMovie: ${BASE_IMG_URL + args.currentItem.poster_path}, ${args.currentItem.title}")
+
+
+        changeMenuItemColor(item, R.color.yellow)
+
+
+        showSnackBar("포스트가 저장되었습니다.")
+        Log.d(
+            TAG,
+            "insertMovie: ${BASE_IMG_URL + args.currentItem.poster_path}, ${args.currentItem.title}"
+        )
 
     }
 
-    private fun deleteMovie() {
+    private fun deleteMovie(item: MenuItem) {
         val movieData = MovieEntity(
 
-
-
-                BASE_IMG_URL + args.currentItem.poster_path,
-
-                args.currentItem.title
+            movieId,
+            args.currentItem
         )
 
         databaseViewModel.deleteData(movieData)
 
-        Toast.makeText(requireContext(), "포스트가 지워집니다.", Toast.LENGTH_SHORT).show()
+        movieSave = false
+        mLikeAdapter?.setLikeData(listOf(movieData))
+        changeMenuItemColor(item, R.color   .white)
+        showSnackBar("포스트가 지워졌습니다.")
         Log.d(TAG, "deleteMovie: $movieData")
     }
 
+    private fun showSnackBar(message: String) {
+        Snackbar.make(
+            binding.exampleLayout,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).setAction("Okay") {}
+            .show()
+
+    }
+
+    private fun imgLoad() {
+        Glide.with(App.instance)
+            .load(BASE_IMG_URL + args.currentItem.poster_path)
+            .centerCrop()
+            .placeholder(R.drawable.test_post)
+            .into(binding.examImg)
+    }
+
+    private fun changeMenuItemColor(item: MenuItem, color: Int) {
+        item.icon.setTint(ContextCompat.getColor(requireContext(), color))
+    }
 
 }
