@@ -35,7 +35,6 @@ class ExampleMovieFragment : Fragment() {
     private val args by navArgs<ExampleMovieFragmentArgs>()
 
     private val databaseViewModel: DatabaseViewModel by viewModels()
-    var mLikeAdapter: MovieListAdapter? = null
     private lateinit var contents: TextView
     private lateinit var examText: TextView
 
@@ -62,8 +61,8 @@ class ExampleMovieFragment : Fragment() {
         examText = binding.examTitle
 
 
-        contents.text = args.currentItem.overview
-        examText.text = args.currentItem.title
+        contents.text = args.result.overview
+        examText.text = args.result.title
 
 
 
@@ -76,6 +75,7 @@ class ExampleMovieFragment : Fragment() {
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_exam, menu)
         val menuItem = menu.findItem(R.id.menu_action_star)
+        changeMenuItemColor(menuItem, R.color .white)
         checkSaveMovie(menuItem)
     }
 
@@ -98,7 +98,7 @@ class ExampleMovieFragment : Fragment() {
         databaseViewModel.getAllData.observe(this, { favoritesEntity ->
             try {
                 for (savedRecipe in favoritesEntity) {
-                    if (savedRecipe.result.id == args.currentItem.id) {
+                    if (savedRecipe.result.id == args.result?.id) {
 
                         changeMenuItemColor(menuItem, R.color.yellow)
                         movieId = savedRecipe.id
@@ -115,16 +115,17 @@ class ExampleMovieFragment : Fragment() {
 
     //데이터 저장
     private fun insertMovie(item: MenuItem) {
-        val movieData = MovieEntity(
-            movieId,
-            args.currentItem
+        val movieData = args.result.let {
+            MovieEntity(
+                    movieId,
+                    it
 
         )
+        }
 
         movieSave = true
         databaseViewModel.insertData(movieData)
 
-        mLikeAdapter?.setLikeData(listOf(movieData))
 
 
 
@@ -134,23 +135,25 @@ class ExampleMovieFragment : Fragment() {
         showSnackBar("포스트가 저장되었습니다.")
         Log.d(
             TAG,
-            "insertMovie: ${BASE_IMG_URL + args.currentItem.poster_path}, ${args.currentItem.title}"
+            "insertMovie: ${BASE_IMG_URL + args.result?.poster_path}, ${args.result?.title}"
         )
 
     }
 
     private fun deleteMovie(item: MenuItem) {
-        val movieData = MovieEntity(
+        val movieData = args.result?.let {
+            MovieEntity(
 
-            movieId,
-            args.currentItem
+                    movieId,
+                    it
         )
+        }
 
-        databaseViewModel.deleteData(movieData)
+        movieData?.let { databaseViewModel.deleteData(it) }
 
         movieSave = false
-        mLikeAdapter?.setLikeData(listOf(movieData))
-        changeMenuItemColor(item, R.color   .white)
+
+        changeMenuItemColor(item, R.color .white)
         showSnackBar("포스트가 지워졌습니다.")
         Log.d(TAG, "deleteMovie: $movieData")
     }
@@ -167,7 +170,7 @@ class ExampleMovieFragment : Fragment() {
 
     private fun imgLoad() {
         Glide.with(App.instance)
-            .load(BASE_IMG_URL + args.currentItem.poster_path)
+            .load(BASE_IMG_URL + args.result?.poster_path)
             .centerCrop()
             .placeholder(R.drawable.test_post)
             .into(binding.examImg)
