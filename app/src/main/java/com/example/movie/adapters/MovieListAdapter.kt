@@ -9,12 +9,11 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.example.movie.MovieCase
 import com.example.movie.R
 import com.example.movie.data.Result
-import com.example.movie.data.database.MovieEntity
 import com.example.movie.databinding.MovieListRowLayoutBinding
 import com.example.movie.databinding.SearchMovieRowBinding
 import com.example.movie.ui.fragment.MovieListFragmentDirections
@@ -22,9 +21,11 @@ import com.example.movie.ui.fragment.SearchPostFragmentDirections
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
 import com.example.movie.untils.Constants.Companion.TAG
+import com.example.movie.untils.MovieCase
+import com.example.movie.untils.MovieDiffUtil
 
 
-@Suppress("DEPRECATION", "CAST_NEVER_SUCCEEDS")
+@Suppress("DEPRECATION", "CAST_NEVER_SUCCEEDS", "DUPLICATE_LABEL_IN_WHEN")
 class MovieListAdapter(
         private var movieList: List<Result>,
         private val movieCase: MovieCase,
@@ -32,9 +33,10 @@ class MovieListAdapter(
 ) :
         RecyclerView.Adapter<MovieListAdapter.BaseViewHolder<*>>(), Filterable {
 
-    var searchList: List<Result> = mutableListOf()
     private var listFilter: MovieListFilter? = null
-    private var likeList = emptyList<MovieEntity>()
+
+
+
     abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
         abstract fun bind(item: Result)
     }
@@ -65,6 +67,7 @@ class MovieListAdapter(
         }
     }
 
+
     inner class SearchViewHolder(
             val binding: SearchMovieRowBinding
     ) :
@@ -91,7 +94,6 @@ class MovieListAdapter(
     }
 
 
-
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
         Log.d(TAG, "onCreateViewHolder: ")
 
@@ -107,6 +109,7 @@ class MovieListAdapter(
                 val binding = MovieListRowLayoutBinding.inflate(layoutInflater, parent, false)
                 MovieHolder(binding)
             }
+
 
             else -> throw IllegalArgumentException("Invalid view type")
 
@@ -126,18 +129,20 @@ class MovieListAdapter(
                 holder.bind(element)
 
 
-                recentViewHolder.binding.pagerItemBg.setOnClickListener() {
+                recentViewHolder.binding.pagerItemPg.setOnClickListener() {
 
                     Log.d(TAG, "RecentHolder - bind() called")
                     val action =
                             MovieListFragmentDirections.actionMovieListFragmentToExampleMovieFragment(
                                     movieList[position]
+
                             )
 
                     it.findNavController().navigate(action)
 
                 }
             }
+
 
             is SearchViewHolder -> {
 
@@ -169,21 +174,21 @@ class MovieListAdapter(
     }
 
 
-
     override fun getItemCount(): Int {
         Log.d(TAG, "getItemCount: ")
         return movieList.size
     }
 
 
-    fun setLikeData(movieData: List<MovieEntity>) {
-        this.likeList = movieData
+    fun setData(movieData: List<Result>) {
+        this.movieList = movieData
         notifyDataSetChanged()
+        val movieDiffUtil = MovieDiffUtil(movieList, movieData)
+        val diffUtilResult= DiffUtil.calculateDiff(movieDiffUtil)
+        movieList = movieData
+        diffUtilResult.dispatchUpdatesTo(this)
     }
-    fun setData(movieData: List<Result>){
-    this.movieList = movieData
-    notifyDataSetChanged()
-    }
+
 
     override fun getFilter(): Filter {
         if (listFilter == null) listFilter = MovieListFilter(this, movieList)
@@ -193,11 +198,9 @@ class MovieListAdapter(
     }
 
 
+    // recyclerView Filter
     private class MovieListFilter(private val listAdapter: MovieListAdapter, private val originalData: List<Result>) : Filter() {
-
-        // List 와 MutableList의 차이점은?
         private val filteredData: MutableList<Result>
-
         override fun performFiltering(constraint: CharSequence): FilterResults {
             filteredData.clear()
             val results = FilterResults()
@@ -220,7 +223,7 @@ class MovieListAdapter(
 
         override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
 
-            //listAdapter.getData().clear();
+//            listAdapter.getData().clear();
             listAdapter.setData(filterResults.values as List<Result>)
             listAdapter.notifyDataSetChanged()
         }
