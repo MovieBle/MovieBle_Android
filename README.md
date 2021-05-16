@@ -4,6 +4,6 @@
 - room
 - firebase
 - mvvm
-- databinding
+- databinding -> viewbinding
 - navigation 
 - recyclerView
