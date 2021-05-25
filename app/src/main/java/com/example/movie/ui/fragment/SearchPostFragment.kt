@@ -6,19 +6,16 @@ import android.view.*
 import androidx.appcompat.widget.SearchView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
-import com.example.movie.untils.MovieCase
 import com.example.movie.R
-import com.example.movie.adapters.MovieListAdapter
-import com.example.movie.data.Movie
+import com.example.movie.adapters.SearchViewAdapter
 import com.example.movie.data.Result
 import com.example.movie.databinding.FragmentSearchPostBinding
-import com.example.movie.network.RecentBuilder
 import com.example.movie.untils.Constants.Companion.TAG
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
+import com.example.movie.viewmodels.NetworkViewModel
 
 
 class SearchPostFragment : Fragment() {
@@ -26,36 +23,97 @@ class SearchPostFragment : Fragment() {
 
     private var _binding: FragmentSearchPostBinding? = null
     private val binding get() = _binding!!
-    var mSearchAdapter: MovieListAdapter? = null
 
-    private val movieList: List<Result>? = null
+
     var movie_recycler: RecyclerView? = null
-    private val viewmodel: com.example.movie.viewmodels.ViewModel by viewModels()
+    private val networkViewModel: NetworkViewModel by viewModels()
+
+    private var page = 1
+    var movieList = mutableListOf<Result>()
+    lateinit var mSearchAdapter: SearchViewAdapter
+
+
     override fun onCreateView(
-            inflater: LayoutInflater,
-            container: ViewGroup?,
-            savedInstanceState: Bundle?)
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    )
             : View {
 
-        mSearchAdapter?.notifyDataSetChanged()
-        movieList?.let { mSearchAdapter?.setData(it) }
-        getNowPlayingMovies()
+
         _binding = FragmentSearchPostBinding.inflate(inflater, container, false)
+        mSearchAdapter = SearchViewAdapter(movieList, requireContext())
+
+
+        //실행안됨 error
+        networkViewModel.getAll().observe(viewLifecycleOwner, Observer {
+
+            Log.d(TAG, "SearchPostFragment - onCreateView() called")
+            mSearchAdapter.setList(it.results as MutableList<Result>)
+            mSearchAdapter.notifyItemRangeInserted((page - 1) * 19, 19)
+        })
+
 
         movie_recycler = binding.searchRecycler
+
         setHasOptionsMenu(true)
+
+        recyclerViewPaging()
+
+        setRecentAdapter(movieList)
+        //getNowPlayingMovies(page,requireContext())
+
+        networkViewModel.getNowPlayingMovies(page)
+
+
+        binding.refreshLayout.setOnRefreshListener {
+
+            mSearchAdapter.notifyDataSetChanged() // 새로고침 하고
+            binding.refreshLayout.isRefreshing = false // 새로고침을 완료하면 아이콘을 없앤다.
+
+
+        }
+
+
+
         return binding.root
+
+    }
+
+    fun recyclerViewPaging() {
+
+
+        movie_recycler?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+
+                val lastVisibleItemPosition =
+                    (recyclerView.layoutManager as LinearLayoutManager?)!!.findLastCompletelyVisibleItemPosition()
+                val itemTotalCount = recyclerView.adapter!!.itemCount - 1
+
+                //recyclerView 마지막일때
+                if (!movie_recycler!!.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
+                    //  mSearchAdapter.deleteLoading()
+                    Log.d(TAG, "onScrolled Position: $lastVisibleItemPosition")
+                    networkViewModel.getNowPlayingMovies(++page)
+                    Log.d(TAG, "onScrolled : Page: $page")
+
+                }
+            }
+        })
     }
 
 
-    private fun setRecentAdapter(movieList: List<Result>) {
+    fun setRecentAdapter(movieList: List<Result>) {
 
-        mSearchAdapter = MovieListAdapter(movieList, MovieCase.SEARCH_LIST_VIEW, requireContext())
+        mSearchAdapter = SearchViewAdapter(movieList as MutableList<Result>, requireContext())
 
         movie_recycler?.adapter = mSearchAdapter
         movie_recycler?.layoutManager =
-                GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
+            GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
         movie_recycler?.setHasFixedSize(false)
+
+
     }
 
 
@@ -66,30 +124,29 @@ class SearchPostFragment : Fragment() {
         searchView.queryHint = getString(R.string.search_view_hint)
 
 
+    //recyclerVIew filter
+        searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
+            override fun onQueryTextSubmit(query: String?): Boolean {
+                Log.d(TAG, "onQueryTextSubmit: ")
+                mSearchAdapter.filter?.filter(query)
+                movieList.let { mSearchAdapter?.setFilterData(it) }
 
+                return false
+            }
 
-            searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
-                override fun onQueryTextSubmit(query: String?): Boolean {
-                    Log.d(TAG, "onQueryTextSubmit: ")
-                    mSearchAdapter?.filter?.filter(query)
-                    movieList?.let { mSearchAdapter?.setData(it) }
+            override fun onQueryTextChange(newText: String?): Boolean {
+                Log.d(TAG, "onQueryTextChange: ")
+                mSearchAdapter.filter?.filter(newText)
+                movieList.let { mSearchAdapter?.setFilterData(it) }
 
-                    return false
-                }
+                return true
+            }
 
-                override fun onQueryTextChange(newText: String?): Boolean {
-                    Log.d(TAG, "onQueryTextChange: ")
-                    mSearchAdapter?.filter?.filter(newText)
-                    movieList?.let { mSearchAdapter?.setData(it) }
-
-                    return true
-                }
-
-            })
-
+        })
 
 
     }
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         return when (item.itemId) {
@@ -97,35 +154,6 @@ class SearchPostFragment : Fragment() {
                 true
             else -> super.onOptionsItemSelected(item)
         }
-
-    }
-
-        private fun getNowPlayingMovies(page: Int = 1): Boolean {
-
-        RecentBuilder.service.getNowPlayingMovies(page = page).enqueue(object : Callback<Movie> {
-            override fun onResponse(call: Call<Movie>, response: Response<Movie>) {
-
-
-                if (response.isSuccessful) {
-
-
-                    val body = response.body()
-                    body?.let {
-                        setRecentAdapter(it.results)
-                        Log.d(TAG, "onResponse: ${it.results}")
-
-                    }
-
-
-                }
-            }
-
-            override fun onFailure(call: Call<Movie>, t: Throwable) {
-                Log.d("error", t.message.toString())
-            }
-        })
-
-        return false
 
     }
 
