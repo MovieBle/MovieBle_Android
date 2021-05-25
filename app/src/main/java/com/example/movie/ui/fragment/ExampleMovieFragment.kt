@@ -1,7 +1,6 @@
 package com.example.movie.ui.fragment
 
 import android.annotation.SuppressLint
-import android.media.Rating
 import android.os.Bundle
 import android.util.Log
 import android.view.*
@@ -11,29 +10,18 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
-import com.bumptech.glide.Glide
 import com.example.movie.R
 import com.example.movie.adapters.LikeViewAdapter
-import com.example.movie.data.Viedo.GetVideoResponse
-import com.example.movie.data.Viedo.Video
 import com.example.movie.data.database.MovieEntity
 import com.example.movie.databinding.FragmentExampleMovieBinding
-import com.example.movie.network.ApiInterface
-import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
-import com.example.movie.untils.Constants.Companion.BASE_URL
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.viewmodels.DatabaseViewModel
-import com.google.android.material.snackbar.Snackbar
+import com.example.movie.viewmodels.ViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.gson.GsonConverterFactory
 
 
-@Suppress("CAST_NEVER_SUCCEEDS")
+@Suppress("CAST_NEVER_SUCCEEDS", "UNREACHABLE_CODE")
 @InternalCoroutinesApi
 
 class ExampleMovieFragment : Fragment() {
@@ -46,34 +34,36 @@ class ExampleMovieFragment : Fragment() {
 
     private var _binding: FragmentExampleMovieBinding? = null
     private val binding get() = _binding!!
+
+
     private val args by navArgs<ExampleMovieFragmentArgs>()
 
     private val databaseViewModel: DatabaseViewModel by viewModels()
+    private val viewModel: ViewModel by viewModels()
+
+
     private lateinit var contents: TextView
     private lateinit var examText: TextView
     private lateinit var rating: RatingBar
-
-    private lateinit var constantsData: TextView
-    private lateinit var examTextData: TextView
-    private lateinit var ratingData: RatingBar
-    private lateinit var img: String
+    private lateinit var releaseText: TextView
 
 
     private var movieSave = false
 
 
-    private var movieId: Int = 0
+       var movieId: Int = 0
+
+
 
 
     private val likeAdapter: LikeViewAdapter by lazy {
         LikeViewAdapter(
             requireContext(),
-            ExampleMovieFragment()
 
         )
-
-
     }
+
+
 
     @SuppressLint("ResourceAsColor")
     override fun onCreateView(
@@ -85,41 +75,23 @@ class ExampleMovieFragment : Fragment() {
         _binding = FragmentExampleMovieBinding.inflate(inflater, container, false)
 
 
-        val bundle = Bundle()
 
-
-        val constantsDatas = bundle.getString("content")
-        val examTextDatas = bundle.getString("title")
-        val ratingDatas = bundle.getDouble("rating")
-        img = bundle.getString("poster").toString()
-
-        Log.d(TAG, "contentData : $constantsDatas, examTextDatas : $examTextDatas ratingDatas : $ratingDatas  ")
-
-        imgLoad()
 
         contents = binding.examContents
         examText = binding.examTitle
         rating = binding.movieRating
+        releaseText = binding.releaseText
+
+
+        //Glide
+        viewModel.imageLoad(binding.examImg,args.result!!.poster_path)
+
+        rating.rating = args.result?.vote_average!!.toFloat() / 2
+
 
         contents.text = args.result?.overview
         examText.text = args.result?.title
-
-
-        // rating.rating = args.result?.vote_average !!. toFloat() / 2
-
-
-        constantsData = binding.examContents
-        examTextData = binding.examTitle
-        ratingData = binding.movieRating
-
-
-
-
-        imgLikeLoad()
-        constantsData.text = constantsDatas
-        examTextData.text = examTextDatas
-        ratingData.rating = ratingDatas.toFloat() / 2
-
+        releaseText.text = args.result?.release_date
 
 
         setHasOptionsMenu(true)
@@ -127,13 +99,6 @@ class ExampleMovieFragment : Fragment() {
         return binding.root
     }
 
-    private fun imgLikeLoad() {
-        Glide.with(App.instance)
-            .load(BASE_IMG_URL + img)
-            .centerCrop()
-            .placeholder(R.drawable.test_post)
-            .into(binding.examImg)
-    }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
         inflater.inflate(R.menu.menu_exam, menu)
@@ -142,18 +107,22 @@ class ExampleMovieFragment : Fragment() {
         checkSaveMovie(menuItem)
     }
 
+
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         if (item.itemId == R.id.menu_action_star && !movieSave) {
             insertMovie(item)
 
+
         } else if (item.itemId == R.id.menu_action_star && movieSave) {
             deleteMovie(item)
+
         } else {
             return super.onOptionsItemSelected(item)
         }
         return super.onOptionsItemSelected(item)
     }
+
 
     private fun checkSaveMovie(menuItem: MenuItem) {
 
@@ -162,7 +131,6 @@ class ExampleMovieFragment : Fragment() {
             try {
                 for (savedMovie in favoritesEntity) {
                     if (savedMovie.result.id == args.result?.id) {
-
                         changeMenuItemColor(menuItem, R.color.yellow)
                         movieId = savedMovie.id
                         movieSave = true
@@ -180,22 +148,27 @@ class ExampleMovieFragment : Fragment() {
     private fun insertMovie(item: MenuItem) {
         val movieData = args.result?.let {
             MovieEntity(
-
-                it
+                movieId++,
+                args.result!!
             )
         }
 
 
-        movieData?.let { databaseViewModel.insertData(it) }
-
-        movieSave = true
-
-        likeAdapter.notifyDataSetChanged()
-
-        changeMenuItemColor(item, R.color.yellow)
+        if (movieData != null) {
 
 
-        showSnackBar("포스트가 저장되었습니다.")
+            databaseViewModel.insertData(movieData)
+
+            viewModel.showSnackBar("포스트가 저장되었습니다.", requireView())
+
+            movieSave = true
+
+
+            likeAdapter.setLikeData(listOf(movieData))
+
+            changeMenuItemColor(item, R.color.yellow)
+        }
+
         Log.d(
             TAG,
             "insertMovie: ${BASE_IMG_URL + args.result?.poster_path}, ${args.result?.title}"
@@ -203,86 +176,45 @@ class ExampleMovieFragment : Fragment() {
     }
 
     private fun deleteMovie(item: MenuItem) {
+
+
         val movieData = args.result?.let {
             MovieEntity(
-
-                it
+                movieId--,
+                args.result!!
             )
         }
 
 
+        movieData?.let {
+            databaseViewModel.deleteData(it)
+            likeAdapter.setLikeData(listOf(movieData))
+            viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
 
-        movieData?.let { databaseViewModel.deleteData(it) }
+
+            movieSave = false
+
+            changeMenuItemColor(item, R.color.white)
+
+        }
 
 
-        likeAdapter.notifyDataSetChanged()
-        movieSave = false
 
-        changeMenuItemColor(item, R.color.white)
-        showSnackBar("포스트가 지워졌습니다.")
         Log.d(TAG, "deleteMovie: $movieData")
-    }
 
-    private fun showSnackBar(message: String) {
-        Snackbar.make(
-            binding.exampleLayout,
-            message,
-            Snackbar.LENGTH_SHORT
-        ).setAction("Okay") {}
-            .show()
 
     }
 
-    private fun imgLoad() {
-        Glide.with(App.instance)
-            .load(BASE_IMG_URL + args.result?.poster_path)
-            .centerCrop()
-            .placeholder(R.drawable.test_post)
-            .into(binding.examImg)
-    }
+
+
 
 
     private fun changeMenuItemColor(item: MenuItem, color: Int) {
         item.icon.setTint(ContextCompat.getColor(requireContext(), color))
     }
 
-    fun getVideo(
-        movie_id: Long,
-        onSuccess: (videos: List<Video>) -> Unit,
-        onError: () -> Unit
-    ) {
-        val movieID = movie_id
-        val retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
 
-        val service = retrofit.create(ApiInterface::class.java)
-        val call = service.getVideoTrailer(movieID = movieID)
 
-        call.enqueue(object : Callback<GetVideoResponse> {
-            override fun onResponse(
-                call: Call<GetVideoResponse>,
-                response: Response<GetVideoResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val responseBody = response.body()
-                    Log.d("response", responseBody.toString())
-                    if (responseBody!!.videos.isNotEmpty() || responseBody.videos.isNotEmpty()) {
-                        onSuccess.invoke(responseBody.videos)
-                    } else {
-                        onError.invoke()
-                    }
-                } else {
-                    Log.d("Result", "응답이 없습니다.")
-                }
-            }
-
-            override fun onFailure(call: Call<GetVideoResponse>, t: Throwable) {
-                Log.d("Error", "오류가 발생했습니다.")
-            }
-        })
-    }
 
 }
 
