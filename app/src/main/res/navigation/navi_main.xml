@@ -5,23 +5,29 @@
     android:id="@+id/navi_main"
     app:startDestination="@id/movieListFragment">
 
+
     <fragment
         android:id="@+id/movieListFragment"
         android:label="영화 리스트"
         tools:layout="@layout/fragment_moive_list"
         android:name="com.example.movie.ui.fragment.MovieListFragment">
+
         <action
             android:id="@+id/action_movieListFragment_to_exampleMovieFragment"
             app:destination="@id/exampleMovieFragment" />
+        <action
+            android:id="@+id/action_movieListFragment_to_exampleLikeMovieFragment"
+            app:destination="@id/exampleLikeMovieFragment" />
+        <action
+            android:id="@+id/action_movieListFragment_to_addMovieFragment"
+            app:destination="@id/addMovieFragment" />
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
         tools:layout="@layout/fragment_profile"
         android:label="프로필"
         android:name="com.example.movie.ui.fragment.ProfileFragment">
-        <action
-            android:id="@+id/action_profileFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
+
     </fragment>
 
 
@@ -30,27 +36,77 @@
         android:label="영화 찾기"
         tools:layout="@layout/fragment_search_post"
         android:name="com.example.movie.ui.fragment.SearchPostFragment">
+
         <action
-            android:id="@+id/action_searchPostFragment_to_exampleMovieFragment"
+            android:id="@+id/action_searchPostFragment_to_exampleMovieFragment4"
             app:destination="@id/exampleMovieFragment" />
     </fragment>
+
     <fragment
         android:id="@+id/exampleMovieFragment"
         android:label="영화"
         tools:layout="@layout/fragment_example_movie"
         android:name="com.example.movie.ui.fragment.ExampleMovieFragment">
-        <argument
-            android:name="currentItem"
-            app:argType="com.example.movie.data.Result" />
+
         <action
             android:id="@+id/action_exampleMovieFragment_to_movieListFragment"
             app:destination="@id/movieListFragment" />
         <action
             android:id="@+id/action_exampleMovieFragment_to_searchPostFragment"
             app:destination="@id/searchPostFragment" />
+
         <action
-            android:id="@+id/action_exampleMovieFragment_to_profileFragment"
-            app:destination="@id/profileFragment" />
+            android:id="@+id/action_exampleMovieFragment_self"
+            app:destination="@id/exampleMovieFragment" />
+
+        <argument
+            android:name="result"
+            app:nullable="true"
+            android:defaultValue="@null"
+            app:argType="com.example.movie.data.Result" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_self2"
+            app:destination="@id/exampleMovieFragment" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_self3"
+            app:destination="@id/exampleMovieFragment" />
+        <action
+            android:id="@+id/action_exampleMovieFragment_to_addMovieFragment"
+            app:destination="@id/addMovieFragment" />
+
+
     </fragment>
+
+    <fragment
+        android:id="@+id/exampleLikeMovieFragment"
+        android:label="영화"
+        app:popUpTo="@id/exampleMovieFragment"
+        tools:layout="@layout/fragment_example_like_movie"
+        android:name="com.example.movie.ui.fragment.ExampleMovieLikeFragment">
+
+
+        <action
+            android:id="@+id/action_exampleLikeMovieFragment_to_movieListFragment"
+            app:destination="@id/movieListFragment" />
+        <argument
+            android:name="likeMovie"
+            app:argType="com.example.movie.data.database.MovieEntity" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/addMovieFragment"
+        android:label="특정 영화"
+        android:name="com.example.movie.ui.fragment.AddMovieFragment"
+        tools:layout="@layout/fragment_add_movie">
+        <action
+            android:id="@+id/action_addMovieFragment_to_exampleMovieFragment"
+            app:destination="@id/exampleMovieFragment" />
+        <argument
+            android:name="movieList"
+            app:argType="com.example.movie.data.Result" />
+
+    </fragment>
+
+
 
 </navigation>
