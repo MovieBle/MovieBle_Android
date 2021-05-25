@@ -1,4 +1,4 @@
-package com.example.movie
+package com.example.movie.untils
 
 import androidx.room.TypeConverter
 import com.example.movie.data.Movie
