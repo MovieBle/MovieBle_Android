@@ -3,6 +3,9 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:id="@+id/exampleLayout"
+    android:stateListAnimator="@null"
+
     android:layout_height="match_parent">
 
 
@@ -13,35 +16,67 @@
         <ImageView
             android:id="@+id/exam_img"
             android:layout_width="150dp"
-            android:layout_height="150dp"
+            android:layout_height="200dp"
             android:layout_margin="10dp"
+            android:scaleType="matrix"
             android:src="@drawable/test_post"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+
         <TextView
             android:id="@+id/exam_title"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="title"
-
-            android:textSize="20dp"
+            android:layout_height="match_parent"
+            android:text="제목"
+            android:textAlignment="center"
+            android:textColor="@color/black"
+            android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/exam_img"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.142"
             app:layout_constraintStart_toEndOf="@+id/exam_img"
-            app:layout_constraintTop_toTopOf="@+id/exam_img" />
+            app:layout_constraintTop_toTopOf="@+id/exam_img"
+            app:layout_constraintVertical_bias="0.213" />
 
-
-        <ImageView
-            android:id="@+id/exam_like_img"
+        <TextView
+            android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:src="@drawable/ic_baseline_thumb_up_24"
+            android:layout_marginStart="12dp"
+            android:text="제작 연도 :"
+            android:textStyle="bold"
             app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="@+id/textView5"
             app:layout_constraintStart_toEndOf="@+id/exam_img"
-            app:layout_constraintTop_toBottomOf="@+id/exam_title" />
+            app:layout_constraintTop_toTopOf="@+id/release_text"
+            app:layout_constraintVertical_bias="0.0" />
+
+        <TextView
+            android:id="@+id/release_text"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:text="2021-04-15"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.066"
+            app:layout_constraintStart_toEndOf="@+id/textView4"
+            app:layout_constraintTop_toBottomOf="@+id/exam_title"
+            app:layout_constraintVertical_bias="0.378" />
+
+        <RatingBar
+            android:id="@+id/movie_rating"
+            style="@style/Widget.AppCompat.RatingBar.Small"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            app:layout_constraintBottom_toTopOf="@+id/textView5"
+            app:layout_constraintEnd_toEndOf="@+id/release_text"
+            app:layout_constraintHorizontal_bias="0.527"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintRight_toRightOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/exam_img"
+            app:layout_constraintTop_toTopOf="@+id/textView4"
+            app:layout_constraintVertical_bias="0.416" />
 
         <TextView
             android:id="@+id/textView5"
@@ -59,14 +94,17 @@
             android:id="@+id/exam_contents"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="10dp"
             android:layout_marginTop="20dp"
             android:text="2009년 미국인 지질학자 에이드리언 헴슬리는 인도에 있는 천체물리학자 사트남 츠루타니 박사를 만나 엄청난 태양 플레어로 생겨난 중성미자가 지구 중심부의 온도를 급격하게 상승시킨다는 사실을 발견한다. 에이드리언은 백악관 비서실장 칼 앤하이저에게 이 사실을 보고하고 앤하이저를 통해서 미국의 대통령과 만난다.
-
-2010년 토머스 윌슨 대통령과 다른 나라의 지도자들은 인류의 생존을 위한 비밀 프로젝트를 시작한다. 40만여 명의 사람들만이 중국 남서부 히말라야 산맥 티베트 초밍에서 건설되고 있는 댐 건설로 위장한 이른바 '노아의 방주'에 탈 수 있었다. 같은 시간 중국 인민해방군은 이 방주를 건설할 사람들을 모으고 텐진은 이 프로젝트에 지원하고 그 사이 승려 니마는 대피한다. 사람들에게 10억 유로의 방주를 탈 수 있는 탑승표를 팔면서 방주를 만들 돈을 모은다. 2011년 인류의 가치있는 보물들은 테러리스트의 공격에서 보호한다는 이유로 알프스로 옮겨지고 미술 전문가와 대통령 딸 로라 윌슨은 이를 돕는다.
-가 폭발하는 와중에 잭슨은 찰리의 노아의 방주 지도를 찾아낸 뒤 가족들과 함께 그 곳을 탈출한다. 찰리는 칼데라 폭발을 중계하다 죽는다. 방주가 중국에 있는 걸 알고 가족은 큰 비행기를 찾기 위해 완전히 황폐해진 라스"
+과 함께 그 곳을 탈출한다. 찰리는 칼데라 폭발을 중계하다 죽는다. 방주가 중국에 있는 걸 알고 가족은 큰 비행기를 찾기 위해 완전히 황폐해진 라스"
+            android:textColor="@color/black"
             android:textSize="20dp"
 
             app:layout_constraintTop_toBottomOf="@+id/textView5"
             tools:layout_editor_absoluteX="0dp" />
+
+
+
     </androidx.constraintlayout.widget.ConstraintLayout>
 </ScrollView>
