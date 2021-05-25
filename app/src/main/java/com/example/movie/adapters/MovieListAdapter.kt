@@ -1,13 +1,10 @@
 package com.example.movie.adapters
 
-import android.content.Context
-import android.text.TextUtils
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
+import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
@@ -15,41 +12,33 @@ import com.bumptech.glide.Glide
 import com.example.movie.R
 import com.example.movie.data.Result
 import com.example.movie.databinding.MovieListRowLayoutBinding
-import com.example.movie.databinding.SearchMovieRowBinding
+import com.example.movie.ui.fragment.AddMovieFragmentDirections
 import com.example.movie.ui.fragment.MovieListFragmentDirections
-import com.example.movie.ui.fragment.SearchPostFragmentDirections
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.untils.MovieCase
 import com.example.movie.untils.MovieDiffUtil
+import com.example.movie.viewmodels.NetworkViewModel
 
 
-@Suppress("DEPRECATION", "CAST_NEVER_SUCCEEDS", "DUPLICATE_LABEL_IN_WHEN")
 class MovieListAdapter(
-        private var movieList: List<Result>,
-        private val movieCase: MovieCase,
-        val context: Context
+
+    private val movieCase: MovieCase
 ) :
-        RecyclerView.Adapter<MovieListAdapter.BaseViewHolder<*>>(), Filterable {
-
-    private var listFilter: MovieListFilter? = null
+    RecyclerView.Adapter<MovieListAdapter.MovieHolder>() {
 
 
+    private var movieList = mutableListOf<Result>()
 
-    abstract class BaseViewHolder<T>(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        abstract fun bind(item: Result)
-    }
-
-
-    inner class MovieHolder(
-            val binding: MovieListRowLayoutBinding
+    class MovieHolder(
+        val binding: MovieListRowLayoutBinding
 
     ) :
-            BaseViewHolder<List<Result>>(binding.root) {
+        RecyclerView.ViewHolder(binding.root) {
 
 
-        override fun bind(item: Result) {
+        fun bind(item: Result) {
 
             val url = BASE_IMG_URL + item.poster_path
 
@@ -58,117 +47,21 @@ class MovieListAdapter(
 
             Log.d(TAG, "bind: $url")
             Glide.with(App.instance)
-                    .load(url)
-                    .centerCrop()
-                    .placeholder(R.drawable.test_post)
-                    .into(binding.pagerItemImage)
+                .load(url)
+                .centerCrop()
+                .placeholder(R.drawable.test_post)
+                .into(binding.pagerItemImage)
 
 
         }
     }
 
 
-    inner class SearchViewHolder(
-            val binding: SearchMovieRowBinding
-    ) :
-            BaseViewHolder<List<Result>>(binding.root) {
-
-
-        override fun bind(item: Result) {
-
-
-            var url = BASE_IMG_URL + item.poster_path
-
-            binding.searchText.text = item.title
-
-
-            Log.d(TAG, "bind: $url")
-            Glide.with(App.instance)
-                    .load(url)
-                    .centerCrop()
-                    .placeholder(R.drawable.test_post)
-                    .into(binding.searchPostImg)
-
-
-        }
-    }
-
-
-    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BaseViewHolder<*> {
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): MovieHolder {
         Log.d(TAG, "onCreateViewHolder: ")
-
-        return when (movieCase) {
-            MovieCase.SEARCH_LIST_VIEW -> {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = SearchMovieRowBinding.inflate(layoutInflater, parent, false)
-                SearchViewHolder(binding)
-            }
-
-            MovieCase.LIST_VIEW -> {
-                val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = MovieListRowLayoutBinding.inflate(layoutInflater, parent, false)
-                MovieHolder(binding)
-            }
-
-
-            else -> throw IllegalArgumentException("Invalid view type")
-
-        }
-    }
-
-    override fun onBindViewHolder(holder: BaseViewHolder<*>, position: Int) {
-        val element = movieList[position]
-
-        when (holder) {
-            is MovieHolder -> {
-
-
-                val recentViewHolder: MovieHolder = holder
-                recentViewHolder.bind(element)
-
-                holder.bind(element)
-
-
-                recentViewHolder.binding.pagerItemPg.setOnClickListener() {
-
-                    Log.d(TAG, "RecentHolder - bind() called")
-                    val action =
-                            MovieListFragmentDirections.actionMovieListFragmentToExampleMovieFragment(
-                                    movieList[position]
-
-                            )
-
-                    it.findNavController().navigate(action)
-
-                }
-            }
-
-
-            is SearchViewHolder -> {
-
-
-                val searchViewHolder: SearchViewHolder = holder
-                searchViewHolder.bind(element)
-
-
-                searchViewHolder.binding.searchItemPg.setOnClickListener() {
-
-                    Log.d(TAG, "SearchViewHolder - bind() called")
-                    val action =
-                            SearchPostFragmentDirections.actionSearchPostFragmentToExampleMovieFragment4(
-                                    movieList[position]
-                            )
-                    it.findNavController().navigate(action)
-
-
-                }
-
-
-            }
-
-
-            else -> throw IllegalArgumentException()
-        }
+        val layoutInflater = LayoutInflater.from(parent.context)
+        val binding = MovieListRowLayoutBinding.inflate(layoutInflater, parent, false)
+        return MovieHolder(binding)
 
 
     }
@@ -180,57 +73,54 @@ class MovieListAdapter(
     }
 
 
-    fun setData(movieData: List<Result>) {
-        this.movieList = movieData
+    fun setData(movieData: List<Result>?) {
+        if (movieData != null) {
+            this.movieList = movieData as MutableList<Result>
+        }
         notifyDataSetChanged()
-        val movieDiffUtil = MovieDiffUtil(movieList, movieData)
-        val diffUtilResult= DiffUtil.calculateDiff(movieDiffUtil)
-        movieList = movieData
-        diffUtilResult.dispatchUpdatesTo(this)
+        val movieDiffUtil = movieData?.let { MovieDiffUtil(movieList, it) }
+        val diffUtilResult = movieDiffUtil?.let { DiffUtil.calculateDiff(it) }
+        if (movieData != null) {
+            movieList = movieData as MutableList<Result>
+        }
+        diffUtilResult?.dispatchUpdatesTo(this)
     }
 
 
-    override fun getFilter(): Filter {
-        if (listFilter == null) listFilter = MovieListFilter(this, movieList)
+    override fun onBindViewHolder(holder: MovieHolder, position: Int) {
+        val element = movieList[position]
 
-        return listFilter as MovieListFilter
+        when (movieCase) {
+            MovieCase.MOVIE_LIST -> {
+                holder.bind(element)
+                holder.binding.pagerItemPg.setOnClickListener {
+                    val action =
+                        MovieListFragmentDirections.actionMovieListFragmentToExampleMovieFragment(
+                            movieList[position]
 
-    }
 
+                        )
 
-    // recyclerView Filter
-    private class MovieListFilter(private val listAdapter: MovieListAdapter, private val originalData: List<Result>) : Filter() {
-        private val filteredData: MutableList<Result>
-        override fun performFiltering(constraint: CharSequence): FilterResults {
-            filteredData.clear()
-            val results = FilterResults()
-            Log.d("performFiltering: ", constraint.toString())
-            if (TextUtils.isEmpty(constraint.toString())) {
-                filteredData.addAll(originalData)
-            } else {
-                val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
-                for (user in originalData) {
-                    // set condition for filter here
-                    if (user.title.toLowerCase().contains(filterPattern)) {
-                        filteredData.add(user)
-                    }
+                    it.findNavController().navigate(action)
                 }
             }
-            results.values = filteredData
-            results.count = filteredData.size
-            return results
-        }
+            MovieCase.MOVIE_RECENT -> {
+                holder.bind(element)
+                holder.binding.pagerItemPg.setOnClickListener {
+                    val action =
+                        AddMovieFragmentDirections.actionAddMovieFragmentToExampleMovieFragment(
+                            movieList[position]
 
-        override fun publishResults(charSequence: CharSequence, filterResults: FilterResults) {
 
-//            listAdapter.getData().clear();
-            listAdapter.setData(filterResults.values as List<Result>)
-            listAdapter.notifyDataSetChanged()
-        }
+                        )
 
-        init {
-            filteredData = ArrayList()
+                    it.findNavController().navigate(action)
+
+                }
+            }
+
+
         }
     }
-
 }
+
