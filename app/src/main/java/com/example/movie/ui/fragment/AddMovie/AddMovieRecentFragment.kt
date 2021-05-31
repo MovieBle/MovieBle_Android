@@ -1,4 +1,4 @@
-package com.example.movie.ui.fragment
+package com.example.movie.ui.fragment.AddMovie
 
 import android.os.Bundle
 import android.util.Log
@@ -12,14 +12,14 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie.adapters.MovieListAdapter
-import com.example.movie.databinding.FragmentAddMovieBinding
+import com.example.movie.databinding.FragmentAddRecentMovieBinding
 import com.example.movie.untils.Constants
 import com.example.movie.untils.MovieCase
 import com.example.movie.viewmodels.NetworkViewModel
 
-class AddMovieFragment : Fragment() {
+class AddMovieRecentFragment : Fragment() {
 
-    private var _binding: FragmentAddMovieBinding? = null
+    private var _binding: FragmentAddRecentMovieBinding? = null
     private val binding get() = _binding!!
 
     private val listAdapter: MovieListAdapter by lazy {
@@ -39,7 +39,7 @@ class AddMovieFragment : Fragment() {
     )
             : View {
 
-        _binding = FragmentAddMovieBinding.inflate(inflater, container, false)
+        _binding = FragmentAddRecentMovieBinding.inflate(inflater, container, false)
 
         recent_recycler = binding.addRecentRecycler
         setTopAdapter()
@@ -49,9 +49,11 @@ class AddMovieFragment : Fragment() {
             listAdapter.notifyItemRangeInserted((page - 1) * 19, 19)
 
         })
+
         recyclerViewAddPlus()
         return binding.root
     }
+
 
     private fun recyclerViewAddPlus() {
         recent_recycler?.addOnScrollListener(object : RecyclerView.OnScrollListener() {
@@ -79,7 +81,7 @@ class AddMovieFragment : Fragment() {
         recent_recycler?.adapter = listAdapter
         recent_recycler?.layoutManager =
             GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
-        recent_recycler?.setHasFixedSize(false)
+        recent_recycler?.setHasFixedSize(true)
 
 
     }
