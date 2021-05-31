@@ -49,7 +49,7 @@ class ExampleMovieLikeFragment : Fragment() {
         LikeViewAdapter(
             requireContext(),
 
-        )
+            )
     }
 
     override fun onCreateView(
