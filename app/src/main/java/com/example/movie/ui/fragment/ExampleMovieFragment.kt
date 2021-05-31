@@ -84,7 +84,7 @@ class ExampleMovieFragment : Fragment() {
 
 
         //Glide
-        viewModel.imageLoad(binding.examImg,args.result!!.poster_path)
+        args.result?.poster_path?.let { viewModel.imageLoad(binding.examImg, it) }
 
         rating.rating = args.result?.vote_average!!.toFloat() / 2
 
