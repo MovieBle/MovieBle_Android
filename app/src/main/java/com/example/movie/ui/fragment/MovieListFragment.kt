@@ -1,22 +1,21 @@
 package com.example.movie.ui.fragment
 
 import android.annotation.SuppressLint
+import android.app.Application
 import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
-import android.view.View.INVISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.constraintlayout.widget.ConstraintSet
-import androidx.constraintlayout.widget.ConstraintSet.VISIBLE
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
-import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -25,25 +24,28 @@ import com.example.movie.adapters.LikeViewAdapter
 import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.data.database.MovieEntity
 import com.example.movie.databinding.FragmentMoiveListBinding
+import com.example.movie.network.ApiInterface
 import com.example.movie.observeOnce
+import com.example.movie.repositorys.NetRepository
+import com.example.movie.repositorys.RemoteDataSource
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.untils.MovieCase
 import com.example.movie.untils.NetworkResult
 import com.example.movie.viewmodels.DatabaseViewModel
 import com.example.movie.viewmodels.NetworkViewModel
+import com.example.movie.viewmodels.QueryViewModel
 import com.todkars.shimmer.ShimmerRecyclerView
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
 
-@InternalCoroutinesApi
-class MovieListFragment : Fragment() {
+@AndroidEntryPoint
+class MovieListFragment() : Fragment() {
 
 
     private var _binding: FragmentMoiveListBinding? = null
     private val binding get() = _binding!!
 
-    private val databaseViewModel: DatabaseViewModel by viewModels()
-    private val networkViewModel: NetworkViewModel by viewModels()
 
     private var like_recycler: ShimmerRecyclerView? = null
     private var popular_recycler: ShimmerRecyclerView? = null
@@ -77,6 +79,8 @@ class MovieListFragment : Fragment() {
 
         )
     }
+
+    @InternalCoroutinesApi
     private val likeAdapter: LikeViewAdapter by lazy {
         LikeViewAdapter(
 
@@ -85,11 +89,29 @@ class MovieListFragment : Fragment() {
         )
     }
 
+
     private val page = 1
 
     var likeList = emptyList<MovieEntity>()
 
+    @InternalCoroutinesApi
+    private lateinit var databaseViewModel: DatabaseViewModel
+    private lateinit var networkViewModel: NetworkViewModel
+    private lateinit var queryViewModel: QueryViewModel
 
+
+    @InternalCoroutinesApi
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+
+        databaseViewModel = ViewModelProvider(requireActivity()).get(DatabaseViewModel::class.java)
+        networkViewModel = ViewModelProvider(requireActivity()).get(NetworkViewModel::class.java)
+        queryViewModel = ViewModelProvider(requireActivity()).get(QueryViewModel::class.java)
+
+    }
+
+    @InternalCoroutinesApi
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -97,9 +119,7 @@ class MovieListFragment : Fragment() {
     )
             : View {
 
-
         _binding = FragmentMoiveListBinding.inflate(inflater, container, false)
-
 
         popular_recycler = binding.popularRecycler
         recent_recycler = binding.recentRecycler
@@ -193,6 +213,7 @@ class MovieListFragment : Fragment() {
         }
     }
 
+    @InternalCoroutinesApi
     private fun setLikeAdapter() {
 
         Log.d(TAG, "setLikeAdapter: ")
@@ -241,9 +262,24 @@ class MovieListFragment : Fragment() {
                     when (text) {
                         binding.moreRecent -> {
                             text.setOnClickListener {
-                                findNavController().navigate(R.id.action_movieListFragment_to_addMovieFragment)
+                                findNavController().navigate(R.id.action_movieListFragment_to_addMovieRecentFragment)
                             }
 
+                        }
+                        binding.moreDiscover -> {
+                            text.setOnClickListener {
+                                findNavController().navigate(R.id.action_movieListFragment_to_addDiscoverMovieFragment)
+                            }
+                        }
+                        binding.moreTop -> {
+                            text.setOnClickListener {
+                                findNavController().navigate(R.id.action_movieListFragment_to_addTopMovieFragment)
+                            }
+                        }
+                        binding.morePopular -> {
+                            text.setOnClickListener {
+                                findNavController().navigate(R.id.action_movieListFragment_to_addPopularMovieFragment)
+                            }
                         }
                     }
 
@@ -300,19 +336,21 @@ class MovieListFragment : Fragment() {
     }
 
 
+    @InternalCoroutinesApi
     private fun readDataBase() {
 
         // 비동기 생성
         lifecycleScope.launch {
             databaseViewModel.readMovie.observeOnce(viewLifecycleOwner, { database ->
+                Log.d(TAG, "readDataBase: observer")
                 // 비어있지 않다면
                 if (database.isNotEmpty()) {
 
-                    Log.d(ContentValues.TAG, "readDataBase: ")
+                    Log.d(ContentValues.TAG, "readDataBase: isNotEmpty ")
                     likeAdapter.setLikeData(listOf(database[0]))
 
                 } else {
-
+                    Log.d(TAG, "readDataBase: Empty")
                     // 비어있으면
                     requestApiData()
                 }
@@ -321,18 +359,24 @@ class MovieListFragment : Fragment() {
         }
     }
 
+    @InternalCoroutinesApi
     private fun requestApiData() {
-
+        databaseViewModel.getRecipes(queryViewModel.getQuery())
         databaseViewModel.getAllDataJson.observe(viewLifecycleOwner, { response ->
+
+            Log.d(TAG, "requestApiData: ")
 //           // response 상태에 따라 로직 나누기
             when (response) {
+
                 is NetworkResult.Success -> {
+                    Log.d(TAG, "requestApiData: success")
                     hideShimmerEffect()
                     response.data?.let {
                         likeAdapter.setLikeData((listOf(it)))
                     }
                 }
                 is NetworkResult.Error -> {
+                    Log.d(TAG, "requestApiData: error")
                     hideShimmerEffect()
                     loadDataFromCache()
                     Toast.makeText(
@@ -343,6 +387,7 @@ class MovieListFragment : Fragment() {
                 }
 
                 is NetworkResult.Loading -> {
+                    Log.d(TAG, "requestApiData: loading")
                     showShimmerEffect()
                 }
 
@@ -350,6 +395,7 @@ class MovieListFragment : Fragment() {
         })
     }
 
+    @InternalCoroutinesApi
     private fun loadDataFromCache() {
 
         // 코루틴 속 에넣음
@@ -379,6 +425,8 @@ class MovieListFragment : Fragment() {
         recent_recycler?.hideShimmer()
         top_recycler?.hideShimmer()
     }
+
+
 }
 
 
