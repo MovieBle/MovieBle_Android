@@ -11,18 +11,18 @@ import java.util.HashMap
 import javax.inject.Inject
 
 
-
-class QueryViewModel @Inject constructor(
+//HiltViewModel 어노테이션 추가안해도 되는 이유는 ?
+class QueryViewModel(
 
     application: Application
 ) : AndroidViewModel(application) {
 
     fun getQuery(): HashMap<String, String> {
-
         val queries: HashMap<String, String> = HashMap()
+
         queries[QUERY_API_KEY] = API_KEY
         queries[language] = "ko-KR"
-        queries[page] = "1"
+        queries[page] = "1".toInt().toString()
         return queries
     }
 }
