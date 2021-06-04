@@ -2,8 +2,8 @@
 
 사용할 기술 
 - room
-- firebase
 - mvvm
 - databinding -> viewbinding
 - navigation 
 - recyclerView
+- Dagger hilt
