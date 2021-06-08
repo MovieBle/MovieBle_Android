@@ -13,9 +13,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.databinding.FragmentAddRecentMovieBinding
+import com.example.movie.models.Result
 import com.example.movie.untils.Constants
 import com.example.movie.untils.MovieCase
-import com.example.movie.viewmodels.NetworkViewModel
 
 class AddMovieRecentFragment : Fragment() {
 
@@ -24,14 +24,13 @@ class AddMovieRecentFragment : Fragment() {
 
     private val listAdapter: MovieListAdapter by lazy {
         MovieListAdapter(
-            MovieCase.MOVIE_RECENT
+            movieList,  MovieCase.MOVIE_RECENT
 
         )
     }
      var page=1
-    private val networkViewModel: NetworkViewModel by viewModels()
     private var recent_recycler: RecyclerView? = null
-
+    var movieList = emptyList<Result>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -43,12 +42,6 @@ class AddMovieRecentFragment : Fragment() {
 
         recent_recycler = binding.addRecentRecycler
         setTopAdapter()
-        networkViewModel.getRecentMovies(page)
-        networkViewModel.getAllRecent().observe(viewLifecycleOwner, Observer {
-            listAdapter.setData(it.results)
-            listAdapter.notifyItemRangeInserted((page - 1) * 19, 19)
-
-        })
 
         recyclerViewAddPlus()
         return binding.root
@@ -68,7 +61,6 @@ class AddMovieRecentFragment : Fragment() {
                 if (!recent_recycler!!.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
                     //  mSearchAdapter.deleteLoading()
                     Log.d(Constants.TAG, "onScrolled Position: $lastVisibleItemPosition")
-                    networkViewModel.getRecentMovies(++page)
                     Log.d(Constants.TAG, "onScrolled : Page: $page")
 
                 }
