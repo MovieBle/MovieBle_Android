@@ -13,4 +13,18 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->
     </style>
+    <style name="LightTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorSurface">@android:color/white</item>
+        <item name="backgroundColor">@android:color/white</item>
+        <item name="android:windowBackground">@color/lightGray</item>
+        <item name="titleTextColor">@android:color/black</item>
+        ...
+    </style>
+    <style name="DarkTheme" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <item name="colorSurface">@color/gray</item>
+        <item name="backgroundColor">@android:color/black</item>
+        <item name="android:windowBackground">@android:color/black</item>
+        <item name="titleTextColor">@android:color/white</item>
+        ...
+    </style>
 </resources>
