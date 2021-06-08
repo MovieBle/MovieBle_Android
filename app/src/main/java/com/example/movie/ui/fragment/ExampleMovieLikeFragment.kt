@@ -10,15 +10,17 @@ import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentManager
 import androidx.fragment.app.viewModels
+import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.navigation.ui.navigateUp
 import com.example.movie.R
 import com.example.movie.adapters.LikeViewAdapter
-import com.example.movie.data.database.MovieEntity
+import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.FragmentExampleLikeMovieBinding
 import com.example.movie.untils.Constants
 import com.example.movie.viewmodels.DatabaseViewModel
+import com.example.movie.viewmodels.QueryViewModel
 import com.example.movie.viewmodels.ViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
 import javax.xml.parsers.DocumentBuilderFactory.newInstance
@@ -41,7 +43,7 @@ class ExampleMovieLikeFragment : Fragment() {
     private var movieSave = true
 
     @InternalCoroutinesApi
-    private val databaseViewModel: DatabaseViewModel by viewModels()
+    private lateinit var databaseViewModel: DatabaseViewModel
     private val viewModel: ViewModel by viewModels()
 
     @InternalCoroutinesApi
@@ -51,7 +53,16 @@ class ExampleMovieLikeFragment : Fragment() {
 
             )
     }
+    @InternalCoroutinesApi
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
 
+
+        databaseViewModel = ViewModelProvider(requireActivity()).get(DatabaseViewModel::class.java)
+
+
+
+    }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -107,15 +118,15 @@ class ExampleMovieLikeFragment : Fragment() {
 
 
         val movieData = args.likeMovie.result.let {
-            MovieEntity(
+            MovieLikeEntity(
                 movieId--,
                 args.likeMovie.result
             )
         }
 
 
-        movieData?.let {
-            databaseViewModel.deleteData(it)
+        movieData.let {
+            databaseViewModel.deleteLikeMovie(movieData)
             viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
 
             likeAdapter.setLikeData(listOf(movieData))
@@ -135,7 +146,7 @@ class ExampleMovieLikeFragment : Fragment() {
     private fun checkSaveMovie(menuItem: MenuItem) {
 
         // ROOM 과 jSON 객체로 받아온 id 값을 비교
-        databaseViewModel.getAllData.observe(this, { favoritesEntity ->
+        databaseViewModel.getAllLikeData.observe(this, { favoritesEntity ->
             try {
                 for (savedMovie in favoritesEntity) {
                     if (savedMovie.result.id == args.likeMovie.result?.id) {
