@@ -8,18 +8,21 @@ import android.view.ViewGroup
 import android.widget.Filter
 import android.widget.Filterable
 import androidx.navigation.findNavController
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.R
-import com.example.movie.data.Result
+import com.example.movie.models.Result
 import com.example.movie.databinding.RowLoadingBinding
 import com.example.movie.databinding.SearchMovieRowBinding
+import com.example.movie.models.Movie
 import com.example.movie.ui.fragment.SearchPostFragmentDirections
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants
+import com.example.movie.untils.MovieDiffUtil
 
 class SearchViewAdapter(
-    private var movieList: MutableList<Result>,
+    private var movieList: List<Result>,
     val context: Context
 
 ) :
@@ -100,8 +103,6 @@ class SearchViewAdapter(
                 it.findNavController().navigate(action)
 
             }
-        } else {
-
         }
 
 
@@ -166,29 +167,13 @@ class SearchViewAdapter(
     }
 
 
-    fun setList(notice: MutableList<Result>) {
-        movieList.addAll(notice)
-        movieList.add(
-            Result(
-                false,
-                " ",
-                emptyList(),
-                0,
-                "",
-                "",
-                "",
-                0.0,
-                "",
-                "",
-                "",
-                false,
-                0.0,
-                0
-            )
-        ) // progress bar 넣을 자리
-    }
 
-    fun deleteLoading() {
-        movieList.removeAt(movieList.lastIndex)
+
+    fun setData(movieData: Movie) {
+        notifyDataSetChanged()
+        val movieDiffUtil = MovieDiffUtil(movieList, movieData.results)
+        val diffUtilResult = movieDiffUtil.let { DiffUtil.calculateDiff(it) }
+        movieList = movieData.results
+        diffUtilResult.dispatchUpdatesTo(this)
     }
 }
