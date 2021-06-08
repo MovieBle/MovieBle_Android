@@ -5,6 +5,7 @@ import android.util.Log
 import com.example.movie.network.ApiInterface
 import com.example.movie.untils.Constants
 import com.example.movie.untils.Constants.Companion.BASE_URL
+import com.example.movie.untils.Constants.Companion.TAG
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -19,22 +20,9 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 
-// Singleton, Provides 쓸때 private 으로 해야한다.
+// Singleton, Provides 쓸때 private 말고 public 으로 해야한다.
 object NetworkModule {
 
-    var service: ApiInterface
-
-    init {
-
-        val retrofit = Retrofit.Builder()
-            .baseUrl(Constants.BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create())
-            .client(createOkHttpClient())
-            .build()
-
-
-        service = retrofit.create(ApiInterface::class.java)
-    }
 
     @Provides
     @Singleton
@@ -61,6 +49,7 @@ object NetworkModule {
             .baseUrl(BASE_URL)
             .client(okHttpClient)
             //json 변화기 Factory
+            .client(createOkHttpClient())
             .addConverterFactory(gsonConverterFactory)
             .build()
 
@@ -82,7 +71,8 @@ object NetworkModule {
     }
 
 
-     fun createOkHttpClient(): OkHttpClient {
+     private fun createOkHttpClient(): OkHttpClient {
+         Log.d(TAG, "createOkHttpClient: ")
         val builder = OkHttpClient.Builder()
         val interceptor = HttpLoggingInterceptor()
         interceptor.level = HttpLoggingInterceptor.Level.BODY
