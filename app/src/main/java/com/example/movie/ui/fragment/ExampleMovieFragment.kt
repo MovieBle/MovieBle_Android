@@ -12,18 +12,19 @@ import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import com.example.movie.R
 import com.example.movie.adapters.LikeViewAdapter
-import com.example.movie.data.database.MovieEntity
+import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.FragmentExampleMovieBinding
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.viewmodels.DatabaseViewModel
 import com.example.movie.viewmodels.ViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
 
 
 @Suppress("CAST_NEVER_SUCCEEDS", "UNREACHABLE_CODE")
 @InternalCoroutinesApi
-
+@AndroidEntryPoint
 class ExampleMovieFragment : Fragment() {
 
 
@@ -127,7 +128,7 @@ class ExampleMovieFragment : Fragment() {
     private fun checkSaveMovie(menuItem: MenuItem) {
 
         // ROOM 과 jSON 객체로 받아온 id 값을 비교
-        databaseViewModel.getAllData.observe(this, { favoritesEntity ->
+        databaseViewModel.getAllLikeData.observe(this, { favoritesEntity ->
             try {
                 for (savedMovie in favoritesEntity) {
                     if (savedMovie.result.id == args.result?.id) {
@@ -146,28 +147,23 @@ class ExampleMovieFragment : Fragment() {
 
     //데이터 저장
     private fun insertMovie(item: MenuItem) {
-        val movieData = args.result?.let {
-            MovieEntity(
+        val movieData = args.result.let {
+            MovieLikeEntity(
                 movieId++,
                 args.result!!
             )
         }
 
+        databaseViewModel.insertLikeMovie(movieData)
 
-        if (movieData != null) {
+        viewModel.showSnackBar("포스트가 저장되었습니다.", requireView())
 
-
-            databaseViewModel.insertData(movieData)
-
-            viewModel.showSnackBar("포스트가 저장되었습니다.", requireView())
-
-            movieSave = true
+        movieSave = true
 
 
-            likeAdapter.setLikeData(listOf(movieData))
+        likeAdapter.setLikeData(listOf(movieData))
 
-            changeMenuItemColor(item, R.color.yellow)
-        }
+        changeMenuItemColor(item, R.color.yellow)
 
         Log.d(
             TAG,
@@ -179,7 +175,7 @@ class ExampleMovieFragment : Fragment() {
 
 
         val movieData = args.result?.let {
-            MovieEntity(
+            MovieLikeEntity(
                 movieId--,
                 args.result!!
             )
@@ -187,7 +183,7 @@ class ExampleMovieFragment : Fragment() {
 
 
         movieData?.let {
-            databaseViewModel.deleteData(it)
+            databaseViewModel.deleteLikeMovie(it)
             likeAdapter.setLikeData(listOf(movieData))
             viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
 
