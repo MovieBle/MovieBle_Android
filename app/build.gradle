@@ -110,6 +110,8 @@ dependencies {
     def nav_version = "2.3.4"
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
 
+    def lottieVersion = "3.4.0"
+    implementation "com.airbnb.android:lottie:$lottieVersion"
     // Feature module Support
     //noinspection GradleDependency
     implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
