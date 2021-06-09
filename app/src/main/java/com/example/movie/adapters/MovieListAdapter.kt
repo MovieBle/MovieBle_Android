@@ -2,34 +2,35 @@ package com.example.movie.adapters
 
 import android.util.Log
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.viewModels
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.R
-import com.example.movie.data.Result
+import com.example.movie.models.Result
 import com.example.movie.databinding.MovieListRowLayoutBinding
-import com.example.movie.ui.fragment.AddMovieFragmentDirections
+import com.example.movie.models.Movie
+
 import com.example.movie.ui.fragment.MovieListFragmentDirections
+import com.example.movie.ui.fragment.addMovie.AddDiscoverMovieFragmentDirections
+import com.example.movie.ui.fragment.addMovie.AddMovieRecentFragmentDirections
+import com.example.movie.ui.fragment.addMovie.AddPopularMovieFragmentDirections
+import com.example.movie.ui.fragment.addMovie.AddTopMovieFragmentDirections
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants.Companion.BASE_IMG_URL
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.untils.MovieCase
 import com.example.movie.untils.MovieDiffUtil
-import com.example.movie.viewmodels.NetworkViewModel
 
 
+@Suppress("CAST_NEVER_SUCCEEDS", "UNREACHABLE_CODE")
 class MovieListAdapter(
-
+    private var movieList: List<Result> = emptyList(),
     private val movieCase: MovieCase
 ) :
     RecyclerView.Adapter<MovieListAdapter.MovieHolder>() {
 
-
-    private var movieList = mutableListOf<Result>()
 
     class MovieHolder(
         val binding: MovieListRowLayoutBinding
@@ -45,7 +46,6 @@ class MovieListAdapter(
             binding.pagerItemText.text = item.title
 
 
-            Log.d(TAG, "bind: $url")
             Glide.with(App.instance)
                 .load(url)
                 .centerCrop()
@@ -68,22 +68,17 @@ class MovieListAdapter(
 
 
     override fun getItemCount(): Int {
-        Log.d(TAG, "getItemCount: ")
         return movieList.size
     }
 
 
-    fun setData(movieData: List<Result>?) {
-        if (movieData != null) {
-            this.movieList = movieData as MutableList<Result>
-        }
+    fun setData(movieData: Movie) {
+
+        val movieDiffUtil = MovieDiffUtil(movieList, movieData.results)
+        val diffUtilResult = movieDiffUtil.let { DiffUtil.calculateDiff(it) }
+        movieList = movieData.results
+        diffUtilResult.dispatchUpdatesTo(this)
         notifyDataSetChanged()
-        val movieDiffUtil = movieData?.let { MovieDiffUtil(movieList, it) }
-        val diffUtilResult = movieDiffUtil?.let { DiffUtil.calculateDiff(it) }
-        if (movieData != null) {
-            movieList = movieData as MutableList<Result>
-        }
-        diffUtilResult?.dispatchUpdatesTo(this)
     }
 
 
@@ -92,6 +87,7 @@ class MovieListAdapter(
 
         when (movieCase) {
             MovieCase.MOVIE_LIST -> {
+
                 holder.bind(element)
                 holder.binding.pagerItemPg.setOnClickListener {
                     val action =
@@ -108,7 +104,7 @@ class MovieListAdapter(
                 holder.bind(element)
                 holder.binding.pagerItemPg.setOnClickListener {
                     val action =
-                        AddMovieFragmentDirections.actionAddMovieFragmentToExampleMovieFragment(
+                        AddMovieRecentFragmentDirections.actionAddMovieRecentFragmentToExampleMovieFragment(
                             movieList[position]
 
 
@@ -116,6 +112,40 @@ class MovieListAdapter(
 
                     it.findNavController().navigate(action)
 
+                }
+            }
+            MovieCase.MOVIE_TOP -> {
+                holder.bind(element)
+                holder.binding.pagerItemPg.setOnClickListener {
+                    val action =
+                        AddTopMovieFragmentDirections.actionAddTopMovieFragmentToExampleMovieFragment(
+                            movieList[position]
+                        )
+
+                    it.findNavController().navigate(action)
+                }
+            }
+            MovieCase.MOVIE_POPULAR -> {
+                holder .bind(element)
+                holder.binding.pagerItemPg.setOnClickListener {
+                    val action =
+                        AddPopularMovieFragmentDirections.actionAddPopularMovieFragmentToExampleMovieFragment(
+                            movieList[position]
+                        )
+
+                    it.findNavController().navigate(action)
+                }
+
+            }
+            MovieCase.MOVIE_DISCOVER -> {
+                holder.bind(element)
+                holder.binding.pagerItemPg.setOnClickListener {
+                    val action =
+                        AddDiscoverMovieFragmentDirections.actionAddDiscoverMovieFragmentToExampleMovieFragment(
+                            movieList[position]
+                        )
+
+                    it.findNavController().navigate(action)
                 }
             }
 
