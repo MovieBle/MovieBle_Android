@@ -1,4 +1,5 @@
-package com.example.movie.ui.fragment.AddMovie
+package com.example.movie.ui.fragment.addMovie
+
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -23,11 +24,11 @@ class AddTopMovieFragment : Fragment() {
 
     private val listAdapter: MovieListAdapter by lazy {
         MovieListAdapter(
-            movieList,     MovieCase.MOVIE_TOP
+            movieList, MovieCase.MOVIE_TOP
 
         )
     }
-    var page=1
+    var page = 1
     private var top_recycler: RecyclerView? = null
     var movieList = emptyList<Result>()
     override fun onCreateView(
@@ -65,6 +66,7 @@ class AddTopMovieFragment : Fragment() {
             }
         })
     }
+
     private fun setTopAdapter() {
 
 
