@@ -1,11 +1,11 @@
 package com.example.movie.untils
 
 import androidx.recyclerview.widget.DiffUtil
-import com.example.movie.data.Result
+import com.example.movie.models.Result
 
 class MovieDiffUtil(
-        private val oldList: List<Result>,
-        private val newList: List<Result>
+    private val oldList: List<Result>,
+    private val newList: List<Result>
 ) : DiffUtil.Callback() {
     override fun getOldListSize(): Int {
         // 함수목록 가져오기
