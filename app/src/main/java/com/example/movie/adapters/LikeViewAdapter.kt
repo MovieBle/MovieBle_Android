@@ -9,7 +9,7 @@ import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.R
-import com.example.movie.data.database.MovieEntity
+import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.LikeMovieRowBinding
 import com.example.movie.databinding.MovieListRowLayoutBinding
 import com.example.movie.ui.fragment.ExampleMovieFragment
@@ -23,10 +23,10 @@ import kotlinx.coroutines.InternalCoroutinesApi
 @InternalCoroutinesApi
 class LikeViewAdapter(
     val context: Context,
-    var fragment: Fragment
+
 ) : RecyclerView.Adapter<LikeViewAdapter.LikeViewHolder>() {
 
-    var likeList = emptyList<MovieEntity>()
+    var likeList = emptyList<MovieLikeEntity>()
 
 
 
@@ -36,7 +36,7 @@ class LikeViewAdapter(
         RecyclerView.ViewHolder(binding.root) {
 
 
-        fun bind(item: MovieEntity) {
+        fun bind(item: MovieLikeEntity) {
 
             val url = Constants.BASE_IMG_URL + item.result.poster_path
 
@@ -77,7 +77,7 @@ class LikeViewAdapter(
         )
     }
 
-    fun setLikeData(likeList: List<MovieEntity>) {
+    fun setLikeData(likeList: List<MovieLikeEntity>) {
         this.likeList = likeList
         notifyDataSetChanged()
     }
