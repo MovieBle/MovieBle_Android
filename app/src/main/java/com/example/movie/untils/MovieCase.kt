@@ -1,10 +1,8 @@
 package com.example.movie.untils
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
-
-
 enum class MovieCase {
 
-    LIST_VIEW, SEARCH_LIST_VIEW
+    MOVIE_LIST, MOVIE_TOP, MOVIE_RECENT, MOVIE_POPULAR, MOVIE_DISCOVER
+
+
 }
