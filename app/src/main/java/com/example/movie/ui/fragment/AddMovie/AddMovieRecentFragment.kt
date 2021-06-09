@@ -1,4 +1,4 @@
-package com.example.movie.ui.fragment.AddMovie
+package com.example.movie.ui.fragment.addMovie
 
 import android.os.Bundle
 import android.util.Log
