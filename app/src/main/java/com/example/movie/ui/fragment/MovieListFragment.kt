@@ -151,8 +151,8 @@ class MovieListFragment() : Fragment() {
 
     }
 
-    private fun setPopularAdapter(movieList: Movie) {
-        listPopularAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+    private fun setPopularAdapter() {
+        listPopularAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
         popular_recycler?.adapter = listPopularAdapter
         popular_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -161,8 +161,8 @@ class MovieListFragment() : Fragment() {
 
     }
 
-    private fun setTopAdapter(movieList: Movie) {
-        listTopAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+    private fun setTopAdapter() {
+        listTopAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
         top_recycler?.adapter = listTopAdapter
         top_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -172,8 +172,8 @@ class MovieListFragment() : Fragment() {
 
     }
 
-    private fun setRecentAdapter(movieList: Movie) {
-        listRecentAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+    private fun setRecentAdapter() {
+        listRecentAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
         recent_recycler?.adapter = listRecentAdapter
         recent_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -183,8 +183,8 @@ class MovieListFragment() : Fragment() {
 
     }
 
-    private fun setDiscoverAdapter(movieList: Movie) {
-        listDiscoverAdapter = MovieListAdapter(movieList.results, movieCase = MovieCase.MOVIE_LIST)
+    private fun setDiscoverAdapter() {
+        listDiscoverAdapter = MovieListAdapter( movieCase = MovieCase.MOVIE_LIST)
         discover_recycler?.adapter = listDiscoverAdapter
         discover_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -266,7 +266,7 @@ class MovieListFragment() : Fragment() {
 
             databaseViewModel.getAllPopularData.observeOnce(viewLifecycleOwner, { database ->
 
-                setPopularAdapter(database[0].movie)
+                setPopularAdapter()
                 if (database.isNotEmpty()) {
 
                     Log.d(TAG, "readDiscoverDataBase: ")
@@ -290,7 +290,7 @@ class MovieListFragment() : Fragment() {
         lifecycleScope.launch {
             databaseViewModel.getAllDiscoverData.observeOnce(viewLifecycleOwner, { database ->
 
-                setDiscoverAdapter(database[0].movie)
+                setDiscoverAdapter()
                 if (database.isNotEmpty()) {
 
                     Log.d(TAG, "readDiscoverDataBase: ")
@@ -314,7 +314,7 @@ class MovieListFragment() : Fragment() {
             databaseViewModel.getRecentMovie(queryViewModel.getQuery(),1)
 
             databaseViewModel.getAllRecentData.observeOnce(viewLifecycleOwner, { database ->
-                setRecentAdapter(database[0].movie)
+                setRecentAdapter()
                 if (database.isNotEmpty()) {
 
                     Log.d(TAG, "readRecentDataBase: ")
@@ -336,7 +336,7 @@ class MovieListFragment() : Fragment() {
         lifecycleScope.launch {
 
             databaseViewModel.getAllData.observeOnce(viewLifecycleOwner, { database ->
-                setTopAdapter(database[0].movie)
+                setTopAdapter()
 
                 if (database.isNotEmpty()) {
                     Log.d(TAG, "readTopDataBase: ")
