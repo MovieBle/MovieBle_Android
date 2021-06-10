@@ -20,9 +20,11 @@ import com.example.movie.ui.fragment.SearchPostFragmentDirections
 import com.example.movie.untils.App
 import com.example.movie.untils.Constants
 import com.example.movie.untils.MovieDiffUtil
+import java.util.*
+import kotlin.collections.ArrayList
 
 class SearchViewAdapter(
-    private var movieList: List<Result>,
+    private var movieList: MutableList<Result>,
     val context: Context
 
 ) :
@@ -47,16 +49,14 @@ class SearchViewAdapter(
         fun bind(item: Result) {
 
 
-            var url = Constants.BASE_IMG_URL + item.poster_path
+            val url = Constants.BASE_IMG_URL + item.poster_path
 
             binding.searchText.text = item.title
 
 
-            Log.d(Constants.TAG, "bind: $url")
             Glide.with(App.instance)
                 .load(url)
                 .centerCrop()
-                .placeholder(R.drawable.test_post)
                 .into(binding.searchPostImg)
 
 
@@ -125,20 +125,22 @@ class SearchViewAdapter(
     // recyclerView Filter
     private class MovieListFilter(
         private val listAdapter: SearchViewAdapter,
-        private val originalData: List<Result>
+            private val originalData: List<Result>
     ) : Filter() {
         private val filteredData: MutableList<Result>
         override fun performFiltering(constraint: CharSequence): FilterResults {
             filteredData.clear()
             val results = FilterResults()
+
             Log.d("performFiltering: ", constraint.toString())
+
+
             if (TextUtils.isEmpty(constraint.toString())) {
                 filteredData.addAll(originalData)
             } else {
                 val filterPattern = constraint.toString().toLowerCase().trim { it <= ' ' }
                 for (user in originalData) {
-                    // set condition for filter here
-                    if (user.title.toLowerCase().contains(filterPattern)) {
+                    if (user.title.toLowerCase(Locale.ROOT).contains(filterPattern)) {
                         filteredData.add(user)
                     }
                 }
@@ -169,11 +171,27 @@ class SearchViewAdapter(
 
 
 
+
+    fun setList(notice: Movie) {
+        movieList.addAll(notice.results)
+        movieList.add(
+            Result(
+                false, "", emptyList<Int>(), 0, "", "", ""
+            , 0.0,"","","",false,0.0,
+                0
+            )
+        ) // progress bar 넣을 자리
+    }
+
+    fun deleteLoading(){
+        movieList.removeAt(movieList.lastIndex)
+    }
     fun setData(movieData: Movie) {
-        notifyDataSetChanged()
+
         val movieDiffUtil = MovieDiffUtil(movieList, movieData.results)
         val diffUtilResult = movieDiffUtil.let { DiffUtil.calculateDiff(it) }
-        movieList = movieData.results
+        movieList = movieData.results as MutableList<Result>
         diffUtilResult.dispatchUpdatesTo(this)
+        notifyDataSetChanged()
     }
 }
