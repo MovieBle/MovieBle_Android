@@ -288,7 +288,6 @@ class MovieListFragment() : Fragment() {
 
         // 비동기 생성
         lifecycleScope.launch {
-            databaseViewModel.getDiscoverMovie(queryViewModel.getQuery(),1)
             databaseViewModel.getAllDiscoverData.observeOnce(viewLifecycleOwner, { database ->
 
                 setDiscoverAdapter(database[0].movie)
@@ -335,7 +334,6 @@ class MovieListFragment() : Fragment() {
 
         // 비동기 생성
         lifecycleScope.launch {
-            databaseViewModel.getTopMovie(queryViewModel.getQuery(),1)
 
             databaseViewModel.getAllData.observeOnce(viewLifecycleOwner, { database ->
                 setTopAdapter(database[0].movie)
@@ -373,12 +371,13 @@ class MovieListFragment() : Fragment() {
                 }
                 is NetworkResult.Error -> {
 
-                    discover_recycler?.hideShimmer()
+                    discover_recycler?.showShimmer()
                     Toast.makeText(
                         requireContext(),
                         response.message.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
+
                 }
 
                 is NetworkResult.Loading -> {
@@ -401,7 +400,7 @@ class MovieListFragment() : Fragment() {
 
                 is NetworkResult.Success -> {
                     Log.d(TAG, "requestApiData: success")
-                top_recycler?.hideShimmer()
+                    top_recycler?.hideShimmer()
                     response.data?.let {
                         listTopAdapter?.setData(((it)))
                     }
