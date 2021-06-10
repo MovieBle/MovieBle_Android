@@ -12,9 +12,9 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.R
+import com.example.movie.databinding.MovieListRowLayoutBinding
 import com.example.movie.models.Result
 import com.example.movie.databinding.RowLoadingBinding
-import com.example.movie.databinding.SearchMovieRowBinding
 import com.example.movie.models.Movie
 import com.example.movie.ui.fragment.SearchPostFragmentDirections
 import com.example.movie.untils.App
@@ -41,7 +41,7 @@ class SearchViewAdapter(
     }
 
     class SearchViewHolder(
-        val binding: SearchMovieRowBinding
+        val binding: MovieListRowLayoutBinding
     ) :
         RecyclerView.ViewHolder(binding.root) {
 
@@ -51,13 +51,13 @@ class SearchViewAdapter(
 
             val url = Constants.BASE_IMG_URL + item.poster_path
 
-            binding.searchText.text = item.title
+            binding.pagerItemText.text = item.title
 
 
             Glide.with(App.instance)
                 .load(url)
                 .centerCrop()
-                .into(binding.searchPostImg)
+                .into(binding.pagerItemImage)
 
 
         }
@@ -73,7 +73,7 @@ class SearchViewAdapter(
         return when (viewType) {
             VIEW_TYPE_ITEM -> {
                 val layoutInflater = LayoutInflater.from(parent.context)
-                val binding = SearchMovieRowBinding.inflate(layoutInflater, parent, false)
+                val binding = MovieListRowLayoutBinding.inflate(layoutInflater, parent, false)
                 SearchViewHolder(binding)
             }
 
@@ -90,7 +90,7 @@ class SearchViewAdapter(
     override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int) {
         if (holder is SearchViewHolder) {
             holder.bind(movieList[position])
-            holder.binding.searchItemPg.setOnClickListener() {
+            holder.binding.pagerItemPg.setOnClickListener() {
 
                 Log.d(Constants.TAG, "RecentHolder - bind() called")
                 val action =

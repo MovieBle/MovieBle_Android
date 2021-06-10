@@ -5,7 +5,6 @@ import androidx.lifecycle.AndroidViewModel
 import com.example.movie.untils.Constants.Companion.API_KEY
 import com.example.movie.untils.Constants.Companion.QUERY_API_KEY
 import com.example.movie.untils.Constants.Companion.language
-import com.example.movie.untils.Constants.Companion.page
 import dagger.hilt.android.lifecycle.HiltViewModel
 import java.util.HashMap
 import javax.inject.Inject
