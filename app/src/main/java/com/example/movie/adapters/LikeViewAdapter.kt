@@ -10,7 +10,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.example.movie.R
 import com.example.movie.data.database.entities.MovieLikeEntity
-import com.example.movie.databinding.LikeMovieRowBinding
 import com.example.movie.databinding.MovieListRowLayoutBinding
 import com.example.movie.ui.fragment.ExampleMovieFragment
 import com.example.movie.ui.fragment.MovieListFragmentDirections
@@ -32,7 +31,7 @@ class LikeViewAdapter(
 
 
 
-    inner class LikeViewHolder(val binding: LikeMovieRowBinding) :
+    inner class LikeViewHolder(val binding: MovieListRowLayoutBinding) :
         RecyclerView.ViewHolder(binding.root) {
 
 
@@ -40,7 +39,7 @@ class LikeViewAdapter(
 
             val url = Constants.BASE_IMG_URL + item.result.poster_path
 
-            binding.likeText.text = item.result.title
+            binding.pagerItemText.text = item.result.title
 
 
             Log.d(Constants.TAG, "bind: $url")
@@ -49,10 +48,10 @@ class LikeViewAdapter(
                 .load(url)
                 .centerCrop()
                 .placeholder(R.drawable.test_post)
-                .into(binding.likePostImg)
+                .into(binding.pagerItemImage)
 
 
-            binding.likeItemPg.setOnClickListener {
+            binding.pagerItemPg.setOnClickListener {
 
                 val action =
                     MovieListFragmentDirections.actionMovieListFragmentToExampleLikeMovieFragment(
@@ -71,7 +70,7 @@ class LikeViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): LikeViewHolder {
         val layoutInflater = LayoutInflater.from(parent.context)
-        val binding = LikeMovieRowBinding.inflate(layoutInflater, parent, false)
+        val binding = MovieListRowLayoutBinding.inflate(layoutInflater, parent, false)
         return LikeViewHolder(
             binding
         )
