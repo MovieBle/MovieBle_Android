@@ -1,3 +1,4 @@
+
 package com.example.movie.ui.fragment
 
 import android.os.Bundle
@@ -118,8 +119,14 @@ class MovieListFragment() : Fragment() {
 
 
         setLikeAdapter()
-        readPopularDataBase()
 
+        setPopularAdapter()
+        setTopAdapter()
+        setRecentAdapter()
+        setDiscoverAdapter()
+
+
+        readPopularDataBase()
         readTopDataBase()
         readDiscoverDataBase()
         readRecentDataBase()
@@ -266,7 +273,7 @@ class MovieListFragment() : Fragment() {
 
             databaseViewModel.getAllPopularData.observeOnce(viewLifecycleOwner, { database ->
 
-                setPopularAdapter()
+           databaseViewModel.getPopularMovie(queryViewModel.getQuery(),1)
                 if (database.isNotEmpty()) {
 
                     Log.d(TAG, "readDiscoverDataBase: ")
@@ -338,6 +345,7 @@ class MovieListFragment() : Fragment() {
             databaseViewModel.getAllData.observeOnce(viewLifecycleOwner, { database ->
                 setTopAdapter()
 
+                databaseViewModel.getTopMovie(queryViewModel.getQuery(),1)
                 if (database.isNotEmpty()) {
                     Log.d(TAG, "readTopDataBase: ")
                     listTopAdapter?.setData(database[0].movie)
