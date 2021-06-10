@@ -13,11 +13,13 @@ import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie.R
-import com.example.movie.adapters.SearchViewAdapter
+import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.databinding.FragmentSearchPostBinding
 import com.example.movie.models.Result
 import com.example.movie.observeOnce
+import com.example.movie.untils.Constants.Companion.MOVIE_RecentT_ABLE
 import com.example.movie.untils.Constants.Companion.TAG
+import com.example.movie.untils.MovieCase
 import com.example.movie.untils.NetworkResult
 import com.example.movie.viewmodels.DatabaseViewModel
 import com.example.movie.viewmodels.QueryViewModel
@@ -41,7 +43,12 @@ class SearchPostFragment : Fragment() {
 
     private var page = 1
     var movieList = mutableListOf<Result>()
-    lateinit var mSearchAdapter: SearchViewAdapter
+
+     private val movieListAdapter: MovieListAdapter by lazy{
+         MovieListAdapter(
+             MovieCase.MOVIE_SEARCH
+         )
+     }
 
 
     @InternalCoroutinesApi
@@ -62,11 +69,11 @@ class SearchPostFragment : Fragment() {
 
         recyclerViewPaging()
 
-        setRecentAdapter(movieList)
+        setRecentAdapter()
 
 
         binding.refreshLayout.setOnRefreshListener {
-            mSearchAdapter.notifyDataSetChanged() // 새로고침 하고
+            movieListAdapter.notifyDataSetChanged() // 새로고침 하고
 
             readDataBase(page)
 
@@ -76,7 +83,7 @@ class SearchPostFragment : Fragment() {
         }
 
         databaseViewModel.getAllDiscoverData.observe(viewLifecycleOwner, Observer {
-            mSearchAdapter.notifyItemRangeInserted((page - 1) * 19, 19)
+            movieListAdapter.notifyItemRangeInserted((page - 1) * 19, 19)
 
         })
 
@@ -137,7 +144,7 @@ class SearchPostFragment : Fragment() {
                 databaseViewModel.getDiscoverMovie(queryViewModel.getQuery(), page)
 
                 if (database.isNotEmpty()) {
-                    mSearchAdapter.setData(database[0].movie)
+                    movieListAdapter.setData(database[0].movie)
                 } else {
                     // 비어있으면
                     requestApiData()
@@ -163,7 +170,7 @@ class SearchPostFragment : Fragment() {
                     Log.d(TAG, "requestApiData: success")
                     hideShimmerEffect()
                     response.data?.let {
-                        mSearchAdapter.setData(((it)))
+                        movieListAdapter.setData(((it)))
                     }
 
 
@@ -196,11 +203,10 @@ class SearchPostFragment : Fragment() {
     }
 
 
-    private fun setRecentAdapter(movieList: List<Result>) {
+    private fun setRecentAdapter() {
 
-        mSearchAdapter = SearchViewAdapter(movieList as MutableList<Result>, requireContext())
 
-        movie_recycler?.adapter = mSearchAdapter
+        movie_recycler?.adapter = movieListAdapter
         movie_recycler?.layoutManager =
             GridLayoutManager(requireContext(), 2, GridLayoutManager.VERTICAL, false)
         movie_recycler?.setHasFixedSize(false)
@@ -219,16 +225,16 @@ class SearchPostFragment : Fragment() {
         searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
             override fun onQueryTextSubmit(query: String?): Boolean {
                 Log.d(TAG, "onQueryTextSubmit: ")
-                mSearchAdapter.filter.filter(query)
-                movieList.let { mSearchAdapter.setFilterData(it) }
+                movieListAdapter.filter.filter(query)
+                movieList.let { movieListAdapter.setFilterData(it) }
 
                 return false
             }
 
             override fun onQueryTextChange(newText: String?): Boolean {
                 Log.d(TAG, "onQueryTextChange: ")
-                mSearchAdapter.filter.filter(newText)
-                movieList.let { mSearchAdapter.setFilterData(it) }
+                movieListAdapter.filter.filter(newText)
+                movieList.let { movieListAdapter.setFilterData(it) }
 
                 return true
             }
