@@ -22,7 +22,7 @@ class QueryViewModel(
 
         queries[QUERY_API_KEY] = API_KEY
         queries[language] = "ko-KR"
-        queries[page] = "1".toInt().toString()
+
         return queries
     }
 }
