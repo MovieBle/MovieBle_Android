@@ -1,18 +1,14 @@
 package com.example.movie.ui.fragment
 
-import android.annotation.SuppressLint
-import android.app.Application
-import android.content.ContentValues
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.VISIBLE
 import android.view.ViewGroup
 import android.widget.TextView
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintSet
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
@@ -22,17 +18,15 @@ import androidx.recyclerview.widget.RecyclerView
 import com.example.movie.R
 import com.example.movie.adapters.LikeViewAdapter
 import com.example.movie.adapters.MovieListAdapter
-import com.example.movie.data.database.MovieEntity
+import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.FragmentMoiveListBinding
-import com.example.movie.network.ApiInterface
+import com.example.movie.models.Movie
+import com.example.movie.models.Result
 import com.example.movie.observeOnce
-import com.example.movie.repositorys.NetRepository
-import com.example.movie.repositorys.RemoteDataSource
 import com.example.movie.untils.Constants.Companion.TAG
 import com.example.movie.untils.MovieCase
 import com.example.movie.untils.NetworkResult
 import com.example.movie.viewmodels.DatabaseViewModel
-import com.example.movie.viewmodels.NetworkViewModel
 import com.example.movie.viewmodels.QueryViewModel
 import com.todkars.shimmer.ShimmerRecyclerView
 import dagger.hilt.android.AndroidEntryPoint
@@ -54,31 +48,10 @@ class MovieListFragment() : Fragment() {
     private var discover_recycler: ShimmerRecyclerView? = null
 
     // 코드 리팩토링 필요
-    private val listAdapter1: MovieListAdapter by lazy {
-        MovieListAdapter(
-
-            MovieCase.MOVIE_LIST
-
-        )
-    }
-    private val listAdapter2: MovieListAdapter by lazy {
-        MovieListAdapter(
-            MovieCase.MOVIE_LIST
-
-        )
-    }
-    private val listAdapter3: MovieListAdapter by lazy {
-        MovieListAdapter(
-            MovieCase.MOVIE_LIST
-
-        )
-    }
-    private val listAdapter4: MovieListAdapter by lazy {
-        MovieListAdapter(
-            MovieCase.MOVIE_LIST
-
-        )
-    }
+    private var listPopularAdapter: MovieListAdapter? = null
+    private var listTopAdapter: MovieListAdapter? = null
+    private var listRecentAdapter: MovieListAdapter? = null
+    private var listDiscoverAdapter: MovieListAdapter? = null
 
     @InternalCoroutinesApi
     private val likeAdapter: LikeViewAdapter by lazy {
@@ -89,16 +62,14 @@ class MovieListFragment() : Fragment() {
         )
     }
 
-
-    private val page = 1
-
-    var likeList = emptyList<MovieEntity>()
+    var likeList = emptyList<MovieLikeEntity>()
 
     @InternalCoroutinesApi
     private lateinit var databaseViewModel: DatabaseViewModel
-    private lateinit var networkViewModel: NetworkViewModel
+
     private lateinit var queryViewModel: QueryViewModel
 
+    var movieList = emptyList<Result>()
 
     @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,10 +77,11 @@ class MovieListFragment() : Fragment() {
 
 
         databaseViewModel = ViewModelProvider(requireActivity()).get(DatabaseViewModel::class.java)
-        networkViewModel = ViewModelProvider(requireActivity()).get(NetworkViewModel::class.java)
+
         queryViewModel = ViewModelProvider(requireActivity()).get(QueryViewModel::class.java)
 
     }
+
 
     @InternalCoroutinesApi
     override fun onCreateView(
@@ -128,10 +100,10 @@ class MovieListFragment() : Fragment() {
         discover_recycler = binding.discoverRecycler
 
 
-        databaseViewModel.getAllData.observe(
+        databaseViewModel.getAllLikeData.observe(
             viewLifecycleOwner,
 
-            androidx.lifecycle.Observer { data ->
+            { data ->
                 // 데이터가 있으면 초기화
                 databaseViewModel.checkIfDatabaseEmpty(data)
                 likeAdapter.setLikeData(data)
@@ -144,59 +116,13 @@ class MovieListFragment() : Fragment() {
         })
 
 
-        // recyclerView 연결
 
-        setPopularAdapter()
         setLikeAdapter()
-        setTopAdapter()
-        setRecentAdapter()
-        setDiscoverAdapter()
+        readPopularDataBase()
 
-        // viewModel 연결 <-> network 연결
-
-        // 하나의 연결이 4개의 recyclerView에 연결됨 각각의로 연결되게 로직필요
-
-        // 데이터를가져옴 파라미터로 넘기기 ?
-
-        networkViewModel.getTopRatedMovies(page)
-
-        networkViewModel.getRecentMovies(page)
-
-        networkViewModel.getPopularMovies(page)
-
-        networkViewModel.getDiscoverMovies(page)
-
-
-        // 각각의 데이터를 가져오고 그것을 각각의 리사이클러뷰에 연결한다.
-        readDataBase()
-
-
-
-        networkViewModel.getAllPopular().observe(viewLifecycleOwner, Observer {
-            listAdapter1.setData(it.results)
-            listAdapter1.notifyItemRangeInserted((page - 1) * 19, 19)
-            recyclerViewEvent(popular_recycler!!)
-
-        })
-        networkViewModel.getAllTop().observe(viewLifecycleOwner, Observer {
-            listAdapter2.setData(it.results)
-
-            listAdapter2.notifyItemRangeInserted((page - 1) * 19, 19)
-            recyclerViewEvent(top_recycler!!)
-        })
-        networkViewModel.grtAllDiscover().observe(viewLifecycleOwner, Observer {
-            listAdapter3.setData(it.results)
-            recyclerViewEvent(discover_recycler!!)
-
-            listAdapter3.notifyItemRangeInserted((page - 1) * 19, 19)
-
-        })
-        networkViewModel.getAllRecent().observe(viewLifecycleOwner, Observer {
-            listAdapter4.setData(it.results)
-
-            listAdapter4.notifyItemRangeInserted((page - 1) * 19, 19)
-            recyclerViewEvent(recent_recycler!!)
-        })
+        readTopDataBase()
+        readDiscoverDataBase()
+        readRecentDataBase()
 
 
         return binding.root
@@ -213,17 +139,59 @@ class MovieListFragment() : Fragment() {
         }
     }
 
+
+    // recyclerView Adapter 연동
     @InternalCoroutinesApi
     private fun setLikeAdapter() {
 
-        Log.d(TAG, "setLikeAdapter: ")
         like_recycler?.adapter = likeAdapter
         like_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
         like_recycler?.setHasFixedSize(false)
 
+    }
+
+    private fun setPopularAdapter(movieList: Movie) {
+        listPopularAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+        popular_recycler?.adapter = listPopularAdapter
+        popular_recycler?.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        popular_recycler?.setHasFixedSize(false)
+        recyclerViewEvent(popular_recycler!!)
 
     }
+
+    private fun setTopAdapter(movieList: Movie) {
+        listTopAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+        top_recycler?.adapter = listTopAdapter
+        top_recycler?.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        top_recycler?.setHasFixedSize(false)
+        recyclerViewEvent(top_recycler!!)
+
+
+    }
+
+    private fun setRecentAdapter(movieList: Movie) {
+        listRecentAdapter = MovieListAdapter(movieList.results, MovieCase.MOVIE_LIST)
+        recent_recycler?.adapter = listRecentAdapter
+        recent_recycler?.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        recent_recycler?.setHasFixedSize(false)
+        recyclerViewEvent(recent_recycler!!)
+
+
+    }
+
+    private fun setDiscoverAdapter(movieList: Movie) {
+        listDiscoverAdapter = MovieListAdapter(movieList.results, movieCase = MovieCase.MOVIE_LIST)
+        discover_recycler?.adapter = listDiscoverAdapter
+        discover_recycler?.layoutManager =
+            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
+        discover_recycler?.setHasFixedSize(false)
+        recyclerViewEvent(discover_recycler!!)
+    }
+
 
     private fun recyclerViewEvent(recyclerView: RecyclerView) {
         when (recyclerView) {
@@ -243,9 +211,9 @@ class MovieListFragment() : Fragment() {
     }
 
 
-    private fun recyclerViewAddPlus(recyclerView: RecyclerView, text: TextView) {
+    private fun recyclerViewAddPlus(recyclerView: ShimmerRecyclerView, text: TextView) {
         recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            @SuppressLint("WrongConstant")
+
             override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
                 super.onScrolled(recyclerView, dx, dy)
 
@@ -255,9 +223,8 @@ class MovieListFragment() : Fragment() {
 
                 //recyclerView 마지막일때
                 if (!recyclerView.canScrollVertically(1) && lastVisibleItemPosition == itemTotalCount) {
-                    //  mSearchAdapter.deleteLoading()
 
-                    text.visibility = ConstraintSet.VISIBLE
+                    text.visibility = VISIBLE
 
                     when (text) {
                         binding.moreRecent -> {
@@ -289,70 +256,27 @@ class MovieListFragment() : Fragment() {
         })
     }
 
-    fun setPopularAdapter() {
-
-        Log.d(TAG, "setAdapter: ")
-        popular_recycler?.adapter = listAdapter1
-        popular_recycler?.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        popular_recycler?.setHasFixedSize(false)
-
-
-    }
-
-
-    private fun setTopAdapter() {
-
-
-        Log.d(TAG, "setTopAdapter: ")
-        top_recycler?.adapter = listAdapter2
-        top_recycler?.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        top_recycler?.setHasFixedSize(false)
-
-
-    }
-
-
-    private fun setRecentAdapter() {
-
-        Log.d(TAG, "setRecentAdapter: ")
-        recent_recycler?.adapter = listAdapter3
-        recent_recycler?.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        recent_recycler?.setHasFixedSize(false)
-
-
-    }
-
-    private fun setDiscoverAdapter() {
-
-        discover_recycler?.adapter = listAdapter4
-        discover_recycler?.layoutManager =
-            LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
-        discover_recycler?.setHasFixedSize(false)
-
-
-    }
-
 
     @InternalCoroutinesApi
-    private fun readDataBase() {
+    private fun readPopularDataBase() {
 
         // 비동기 생성
         lifecycleScope.launch {
-            databaseViewModel.readMovie.observeOnce(viewLifecycleOwner, { database ->
-                Log.d(TAG, "readDataBase: observer")
-                // 비어있지 않다면
+
+
+            databaseViewModel.getAllPopularData.observeOnce(viewLifecycleOwner, { database ->
+
+                setPopularAdapter(database[0].movie)
                 if (database.isNotEmpty()) {
 
-                    Log.d(ContentValues.TAG, "readDataBase: isNotEmpty ")
-                    likeAdapter.setLikeData(listOf(database[0]))
+                    Log.d(TAG, "readDiscoverDataBase: ")
+                    listPopularAdapter?.setData(database[0].movie)
+
 
                 } else {
-                    Log.d(TAG, "readDataBase: Empty")
                     // 비어있으면
-                    requestApiData()
+                    requestPopularApiData()
+
                 }
 
             })
@@ -360,25 +284,96 @@ class MovieListFragment() : Fragment() {
     }
 
     @InternalCoroutinesApi
-    private fun requestApiData() {
-        databaseViewModel.getRecipes(queryViewModel.getQuery())
-        databaseViewModel.getAllDataJson.observe(viewLifecycleOwner, { response ->
+    private fun readDiscoverDataBase() {
 
-            Log.d(TAG, "requestApiData: ")
-//           // response 상태에 따라 로직 나누기
+        // 비동기 생성
+        lifecycleScope.launch {
+            databaseViewModel.getDiscoverMovie(queryViewModel.getQuery(),1)
+            databaseViewModel.getAllDiscoverData.observeOnce(viewLifecycleOwner, { database ->
+
+                setDiscoverAdapter(database[0].movie)
+                if (database.isNotEmpty()) {
+
+                    Log.d(TAG, "readDiscoverDataBase: ")
+                    listDiscoverAdapter?.setData(database[0].movie)
+
+
+                } else {
+                    // 비어있으면
+                    requestDiscoverApiData()
+                }
+
+            })
+        }
+    }
+
+    @InternalCoroutinesApi
+    private fun readRecentDataBase() {
+
+        // 비동기 생성
+        lifecycleScope.launch {
+            databaseViewModel.getRecentMovie(queryViewModel.getQuery(),1)
+
+            databaseViewModel.getAllRecentData.observeOnce(viewLifecycleOwner, { database ->
+                setRecentAdapter(database[0].movie)
+                if (database.isNotEmpty()) {
+
+                    Log.d(TAG, "readRecentDataBase: ")
+                    listRecentAdapter?.setData(database[0].movie)
+
+                } else {
+                    // 비어있으면
+                    requestRecentApiData()
+                }
+
+            })
+        }
+    }
+
+    @InternalCoroutinesApi
+    private fun readTopDataBase() {
+
+        // 비동기 생성
+        lifecycleScope.launch {
+            databaseViewModel.getTopMovie(queryViewModel.getQuery(),1)
+
+            databaseViewModel.getAllData.observeOnce(viewLifecycleOwner, { database ->
+                setTopAdapter(database[0].movie)
+
+                if (database.isNotEmpty()) {
+                    Log.d(TAG, "readTopDataBase: ")
+                    listTopAdapter?.setData(database[0].movie)
+
+                } else {
+                    // 비어있으면
+                    requestTopApiData()
+                }
+
+            })
+        }
+    }
+
+    @InternalCoroutinesApi
+    private fun requestDiscoverApiData() {
+
+
+        databaseViewModel.getAllMovie.observe(viewLifecycleOwner, { response ->
+
+
             when (response) {
 
                 is NetworkResult.Success -> {
                     Log.d(TAG, "requestApiData: success")
-                    hideShimmerEffect()
+                    discover_recycler?.hideShimmer()
                     response.data?.let {
-                        likeAdapter.setLikeData((listOf(it)))
+
+                        listDiscoverAdapter?.setData(((it)))
+
                     }
                 }
                 is NetworkResult.Error -> {
-                    Log.d(TAG, "requestApiData: error")
-                    hideShimmerEffect()
-                    loadDataFromCache()
+
+                    discover_recycler?.hideShimmer()
                     Toast.makeText(
                         requireContext(),
                         response.message.toString(),
@@ -387,9 +382,114 @@ class MovieListFragment() : Fragment() {
                 }
 
                 is NetworkResult.Loading -> {
-                    Log.d(TAG, "requestApiData: loading")
-                    showShimmerEffect()
+
+                    discover_recycler?.showShimmer()
                 }
+
+            }
+        })
+    }
+
+    @InternalCoroutinesApi
+    private fun requestTopApiData() {
+
+
+        databaseViewModel.getAllMovie.observe(viewLifecycleOwner, { response ->
+
+//           // response 상태에 따라 로직 나누기
+            when (response) {
+
+                is NetworkResult.Success -> {
+                    Log.d(TAG, "requestApiData: success")
+                top_recycler?.hideShimmer()
+                    response.data?.let {
+                        listTopAdapter?.setData(((it)))
+                    }
+                }
+                is NetworkResult.Error -> {
+
+                    top_recycler?.hideShimmer()
+                    Toast.makeText(
+                        requireContext(),
+                        response.message.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is NetworkResult.Loading -> {
+
+                    top_recycler?.showShimmer()
+                }
+
+            }
+        })
+    }
+
+    @InternalCoroutinesApi
+    private fun requestRecentApiData() {
+
+
+        databaseViewModel.getAllMovie.observe(viewLifecycleOwner, { response ->
+
+//           // response 상태에 따라 로직 나누기
+            when (response) {
+
+                is NetworkResult.Success -> {
+                    recent_recycler?.hideShimmer()
+                    response.data?.let {
+                        Log.d(TAG, "requestRecentApiData: ")
+                        Toast.makeText(
+                            requireContext(),
+                            response.message.toString(),
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        listRecentAdapter?.setData(((it)))
+                    }
+                }
+                is NetworkResult.Error -> {
+                    recent_recycler?.hideShimmer()
+                    Toast.makeText(
+                        requireContext(),
+                        response.message.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is NetworkResult.Loading ->
+                    recent_recycler?.showShimmer()
+
+            }
+        })
+    }
+
+    @InternalCoroutinesApi
+    private fun requestPopularApiData() {
+
+
+        databaseViewModel.getAllMovie.observe(viewLifecycleOwner, { response ->
+
+            when (response) {
+
+                is NetworkResult.Success -> {
+                    popular_recycler?.hideShimmer()
+                    response.data?.let {
+
+                        Log.d(TAG, "requestPopularApiData: ")
+
+                        listPopularAdapter?.setData(((it)))
+                    }
+                }
+                is NetworkResult.Error -> {
+                    popular_recycler?.hideShimmer()
+                    loadDataFromCache()
+                    Toast.makeText(
+                        requireContext(),
+                        response.message.toString(),
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+
+                is NetworkResult.Loading -> popular_recycler?.showShimmer()
 
             }
         })
@@ -400,7 +500,6 @@ class MovieListFragment() : Fragment() {
 
         // 코루틴 속 에넣음
         lifecycleScope.launch {
-
             databaseViewModel.getAllData.observe(viewLifecycleOwner, { database ->
                 if (database.isNotEmpty()) {
                     likeAdapter.setLikeData(likeList)
@@ -409,22 +508,6 @@ class MovieListFragment() : Fragment() {
         }
     }
 
-    private fun showShimmerEffect() {
-
-        discover_recycler?.showShimmer()
-        like_recycler?.showShimmer()
-        popular_recycler?.showShimmer()
-        recent_recycler?.showShimmer()
-        top_recycler?.showShimmer()
-    }
-
-    private fun hideShimmerEffect() {
-        discover_recycler?.hideShimmer()
-        like_recycler?.hideShimmer()
-        popular_recycler?.hideShimmer()
-        recent_recycler?.hideShimmer()
-        top_recycler?.hideShimmer()
-    }
 
 
 }
