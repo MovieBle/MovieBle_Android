@@ -56,9 +56,9 @@
 
     <fragment
         android:id="@+id/exampleMovieFragment"
+        android:name="com.example.movie.ui.fragment.ExampleMovieFragment"
         android:label="영화"
-        tools:layout="@layout/fragment_example_movie"
-        android:name="com.example.movie.ui.fragment.ExampleMovieFragment">
+        tools:layout="@layout/fragment_example_movie">
 
         <action
             android:id="@+id/action_exampleMovieFragment_to_movieListFragment"
@@ -71,11 +71,12 @@
             android:id="@+id/action_exampleMovieFragment_self"
             app:destination="@id/exampleMovieFragment" />
 
+
         <argument
             android:name="result"
-            app:nullable="true"
             android:defaultValue="@null"
-            app:argType="com.example.movie.data.Result" />
+            app:argType="com.example.movie.models.Result"
+            app:nullable="true" />
         <action
             android:id="@+id/action_exampleMovieFragment_self2"
             app:destination="@id/exampleMovieFragment" />
@@ -100,42 +101,44 @@
 
     <fragment
         android:id="@+id/exampleLikeMovieFragment"
+        android:name="com.example.movie.ui.fragment.ExampleMovieLikeFragment"
         android:label="영화"
         app:popUpTo="@id/exampleMovieFragment"
-        tools:layout="@layout/fragment_example_like_movie"
-        android:name="com.example.movie.ui.fragment.ExampleMovieLikeFragment">
+        tools:layout="@layout/fragment_example_like_movie">
 
 
         <action
             android:id="@+id/action_exampleLikeMovieFragment_to_movieListFragment"
             app:destination="@id/movieListFragment" />
+
         <argument
             android:name="likeMovie"
-            app:argType="com.example.movie.data.database.MovieEntity" />
+            app:argType="com.example.movie.data.database.entities.MovieLikeEntity" />
     </fragment>
 
     <fragment
         android:id="@+id/addMovieRecentFragment"
+        android:name="com.example.movie.ui.fragment.addMovie.AddMovieRecentFragment"
         android:label="최근 영화"
-        android:name="com.example.movie.ui.fragment.AddMovie.AddMovieRecentFragment"
         tools:layout="@layout/fragment_add_recent_movie">
 
 
         <action
             android:id="@+id/action_addMovieRecentFragment_to_exampleMovieFragment"
             app:destination="@id/exampleMovieFragment" />
+
+
         <argument
             android:name="movieList"
-            app:argType="com.example.movie.data.Result" />
+            app:argType="com.example.movie.models.Result" />
 
     </fragment>
 
     <fragment
         android:id="@+id/addPopularMovieFragment"
+        android:name="com.example.movie.ui.fragment.addMovie.AddPopularMovieFragment"
         android:label="유명 영화"
-        android:name="com.example.movie.ui.fragment.AddMovie.AddPopularMovieFragment"
         tools:layout="@layout/fragment_add_recent_movie">
-
 
 
         <action
@@ -143,13 +146,13 @@
             app:destination="@id/exampleMovieFragment" />
         <argument
             android:name="movieList"
-            app:argType="com.example.movie.data.Result" />
+            app:argType="com.example.movie.models.Result" />
     </fragment>
 
     <fragment
         android:id="@+id/addDiscoverMovieFragment"
+        android:name="com.example.movie.ui.fragment.addMovie.AddDiscoverMovieFragment"
         android:label="Discover 영화"
-        android:name="com.example.movie.ui.fragment.AddMovie.AddDiscoverMovieFragment"
         tools:layout="@layout/fragment_add_recent_movie">
 
 
@@ -158,13 +161,13 @@
             app:destination="@id/exampleMovieFragment" />
         <argument
             android:name="movieList"
-            app:argType="com.example.movie.data.Result" />
+            app:argType="com.example.movie.models.Result" />
     </fragment>
 
     <fragment
         android:id="@+id/addTopMovieFragment"
+        android:name="com.example.movie.ui.fragment.addMovie.AddTopMovieFragment"
         android:label="Top 영화"
-        android:name="com.example.movie.ui.fragment.AddMovie.AddTopMovieFragment"
         tools:layout="@layout/fragment_add_recent_movie">
 
 
@@ -173,9 +176,8 @@
             app:destination="@id/exampleMovieFragment" />
         <argument
             android:name="movieList"
-            app:argType="com.example.movie.data.Result" />
+            app:argType="com.example.movie.models.Result" />
     </fragment>
-
 
 
 </navigation>
