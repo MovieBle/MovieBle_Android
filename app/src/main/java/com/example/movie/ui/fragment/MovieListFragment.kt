@@ -1,6 +1,10 @@
-
 package com.example.movie.ui.fragment
 
+import android.content.BroadcastReceiver
+import android.content.Context
+import android.content.Intent
+import android.content.IntentFilter
+import android.net.wifi.WifiManager
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
@@ -21,7 +25,6 @@ import com.example.movie.adapters.LikeViewAdapter
 import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.FragmentMoiveListBinding
-import com.example.movie.models.Movie
 import com.example.movie.models.Result
 import com.example.movie.observeOnce
 import com.example.movie.untils.Constants.Companion.TAG
@@ -29,10 +32,12 @@ import com.example.movie.untils.MovieCase
 import com.example.movie.untils.NetworkResult
 import com.example.movie.viewmodels.DatabaseViewModel
 import com.example.movie.viewmodels.QueryViewModel
+import com.sergivonavi.materialbanner.Banner
 import com.todkars.shimmer.ShimmerRecyclerView
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
 import kotlinx.coroutines.launch
+
 
 @AndroidEntryPoint
 class MovieListFragment() : Fragment() {
@@ -100,7 +105,6 @@ class MovieListFragment() : Fragment() {
         like_recycler = binding.likeRecycler
         discover_recycler = binding.discoverRecycler
 
-
         databaseViewModel.getAllLikeData.observe(
             viewLifecycleOwner,
 
@@ -159,7 +163,7 @@ class MovieListFragment() : Fragment() {
     }
 
     private fun setPopularAdapter() {
-        listPopularAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
+        listPopularAdapter = MovieListAdapter(MovieCase.MOVIE_LIST)
         popular_recycler?.adapter = listPopularAdapter
         popular_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -169,7 +173,7 @@ class MovieListFragment() : Fragment() {
     }
 
     private fun setTopAdapter() {
-        listTopAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
+        listTopAdapter = MovieListAdapter(MovieCase.MOVIE_LIST)
         top_recycler?.adapter = listTopAdapter
         top_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -180,7 +184,7 @@ class MovieListFragment() : Fragment() {
     }
 
     private fun setRecentAdapter() {
-        listRecentAdapter = MovieListAdapter( MovieCase.MOVIE_LIST)
+        listRecentAdapter = MovieListAdapter(MovieCase.MOVIE_LIST)
         recent_recycler?.adapter = listRecentAdapter
         recent_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -191,7 +195,7 @@ class MovieListFragment() : Fragment() {
     }
 
     private fun setDiscoverAdapter() {
-        listDiscoverAdapter = MovieListAdapter( movieCase = MovieCase.MOVIE_LIST)
+        listDiscoverAdapter = MovieListAdapter(movieCase = MovieCase.MOVIE_LIST)
         discover_recycler?.adapter = listDiscoverAdapter
         discover_recycler?.layoutManager =
             LinearLayoutManager(requireContext(), LinearLayoutManager.HORIZONTAL, false)
@@ -273,7 +277,7 @@ class MovieListFragment() : Fragment() {
 
             databaseViewModel.getAllPopularData.observeOnce(viewLifecycleOwner, { database ->
 
-           databaseViewModel.getPopularMovie(queryViewModel.getQuery(),1)
+                databaseViewModel.getPopularMovie(queryViewModel.getQuery(), 1)
                 if (database.isNotEmpty()) {
 
                     Log.d(TAG, "readDiscoverDataBase: ")
@@ -313,12 +317,36 @@ class MovieListFragment() : Fragment() {
         }
     }
 
+
+
+    @InternalCoroutinesApi
+    private fun bannerFloat() {
+
+
+        val banner: Banner = binding.banner
+        banner.setLeftButtonListener {
+
+            banner.dismiss()
+            }
+
+        banner.setRightButtonListener {
+
+            banner.dismiss()
+
+        }
+
+        banner.show()
+
+
+    }
+
+
     @InternalCoroutinesApi
     private fun readRecentDataBase() {
 
         // 비동기 생성
         lifecycleScope.launch {
-            databaseViewModel.getRecentMovie(queryViewModel.getQuery(),1)
+            databaseViewModel.getRecentMovie(queryViewModel.getQuery(), 1)
 
             databaseViewModel.getAllRecentData.observeOnce(viewLifecycleOwner, { database ->
                 setRecentAdapter()
@@ -345,7 +373,7 @@ class MovieListFragment() : Fragment() {
             databaseViewModel.getAllData.observeOnce(viewLifecycleOwner, { database ->
                 setTopAdapter()
 
-                databaseViewModel.getTopMovie(queryViewModel.getQuery(),1)
+                databaseViewModel.getTopMovie(queryViewModel.getQuery(), 1)
                 if (database.isNotEmpty()) {
                     Log.d(TAG, "readTopDataBase: ")
                     listTopAdapter?.setData(database[0].movie)
@@ -385,6 +413,7 @@ class MovieListFragment() : Fragment() {
                         response.message.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    bannerFloat()
 
                 }
 
@@ -421,6 +450,7 @@ class MovieListFragment() : Fragment() {
                         response.message.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    bannerFloat()
                 }
 
                 is NetworkResult.Loading -> {
@@ -460,6 +490,7 @@ class MovieListFragment() : Fragment() {
                         response.message.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    bannerFloat()
                 }
 
                 is NetworkResult.Loading ->
@@ -494,6 +525,7 @@ class MovieListFragment() : Fragment() {
                         response.message.toString(),
                         Toast.LENGTH_SHORT
                     ).show()
+                    bannerFloat()
                 }
 
                 is NetworkResult.Loading -> popular_recycler?.showShimmer()
@@ -514,6 +546,7 @@ class MovieListFragment() : Fragment() {
             })
         }
     }
+
 
 
 
