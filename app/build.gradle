@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId "com.example.movie"
-        minSdkVersion 30
+        minSdkVersion 25
         targetSdkVersion 30
         versionCode 1
         versionName "1.0"
@@ -77,7 +77,8 @@ dependencies {
     implementation 'com.google.firebase:firebase-database:20.0.0'
     implementation 'com.google.firebase:firebase-firestore-ktx:23.0.1'
 
-
+    // 디자인 ?
+    implementation 'com.github.mohammadima3oud:Material-Resources-Library:1.0.0'
     // dager hilt
 
 
@@ -155,7 +156,8 @@ dependencies {
     //noinspection GradleDependency
     androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
 
-
+    //text 나타나는 라이브러리
+    implementation 'com.github.sarnavakonar:TextWriter:v1.0'
 
     // Shimmer
     implementation 'com.facebook.shimmer:shimmer:0.5.0'
