@@ -6,14 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
-import androidx.lifecycle.Observer
 import androidx.recyclerview.widget.GridLayoutManager
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.movie.adapters.MovieListAdapter
 import com.example.movie.databinding.FragmentTopAddMovieBinding
-import com.example.movie.models.Result
 import com.example.movie.untils.Constants
 import com.example.movie.untils.MovieCase
 
@@ -24,13 +21,12 @@ class AddTopMovieFragment : Fragment() {
 
     private val listAdapter: MovieListAdapter by lazy {
         MovieListAdapter(
-            movieList, MovieCase.MOVIE_TOP
+            MovieCase.MOVIE_TOP
 
         )
     }
     var page = 1
     private var top_recycler: RecyclerView? = null
-    var movieList = emptyList<Result>()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
