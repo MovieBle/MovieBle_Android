@@ -1,35 +1,22 @@
 package com.example.movie.ui.fragment
 
 import android.os.Bundle
-import android.util.Log
-import android.view.*
+import android.view.LayoutInflater
+import android.view.View
+import android.view.ViewGroup
 import android.widget.RatingBar
 import android.widget.TextView
-import androidx.activity.addCallback
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentManager
-import androidx.fragment.app.viewModels
 import androidx.lifecycle.ViewModelProvider
-import androidx.navigation.fragment.findNavController
-import androidx.navigation.fragment.navArgs
-import androidx.navigation.ui.navigateUp
-import com.example.movie.R
-import com.example.movie.adapters.LikeViewAdapter
-import com.example.movie.data.database.entities.MovieLikeEntity
 import com.example.movie.databinding.FragmentExampleLikeMovieBinding
-import com.example.movie.untils.Constants
 import com.example.movie.viewmodels.DatabaseViewModel
-import com.example.movie.viewmodels.QueryViewModel
-import com.example.movie.viewmodels.ViewModel
 import kotlinx.coroutines.InternalCoroutinesApi
-import javax.xml.parsers.DocumentBuilderFactory.newInstance
 
+@Suppress("UNCHECKED_CAST")
 class ExampleMovieLikeFragment : Fragment() {
 
     private var _binding: FragmentExampleLikeMovieBinding? = null
-    private val binding get() = _binding!!
-    private val args by navArgs<ExampleMovieLikeFragmentArgs>()
+     val binding get() = _binding!!
 
 
     private lateinit var contents: TextView
@@ -44,15 +31,7 @@ class ExampleMovieLikeFragment : Fragment() {
 
     @InternalCoroutinesApi
     private lateinit var databaseViewModel: DatabaseViewModel
-    private val viewModel: ViewModel by viewModels()
 
-    @InternalCoroutinesApi
-    private val likeAdapter: LikeViewAdapter by lazy {
-        LikeViewAdapter(
-            requireContext(),
-
-            )
-    }
     @InternalCoroutinesApi
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -80,13 +59,6 @@ class ExampleMovieLikeFragment : Fragment() {
 
 
 
-        rating.rating = args.likeMovie.result.vote_average.toFloat() / 2
-        contents.text = args.likeMovie.result.overview
-        examText.text = args.likeMovie.result.title
-        releaseText.text = args.likeMovie.result.release_date
-
-        viewModel.imageLoad(binding.likeExamImg, args.likeMovie.result.poster_path)
-
 
 
         setHasOptionsMenu(true)
@@ -94,78 +66,80 @@ class ExampleMovieLikeFragment : Fragment() {
         return binding.root
     }
 
-    @InternalCoroutinesApi
-    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-        inflater.inflate(R.menu.menu_exam, menu)
-        val menuItem = menu.findItem(R.id.menu_action_star)
-        changeMenuItemColor(menuItem, R.color.yellow)
-        checkSaveMovie(menuItem)
-    }
+//    @InternalCoroutinesApi
+//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+//        inflater.inflate(R.menu.menu_exam, menu)
+//        val menuItem = menu.findItem(R.id.menu_action_star)
+//        changeMenuItemColor(menuItem, R.color.yellow)
+//        checkSaveMovie(menuItem)
+//    }
+//
+//    @InternalCoroutinesApi
+//    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//
+//        if (item.itemId == R.id.menu_action_star && movieSave) {
+//            deleteMovie(item)
+//        } else {
+//            return super.onOptionsItemSelected(item)
+//        }
+//        return super.onOptionsItemSelected(item)
+//    }
 
-    @InternalCoroutinesApi
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+//    @InternalCoroutinesApi
+//    private fun deleteMovie(item: MenuItem) {
+//
+//
+//        val movieData = args.likeMovie?.result.let {
+//            args.likeMovie?.result?.let { it1 ->
+//                MovieLikeEntity(
+//                    movieId--,
+//                    it1
+//                )
+//            }
+//        }
+//
 
-        if (item.itemId == R.id.menu_action_star && movieSave) {
-            deleteMovie(item)
-        } else {
-            return super.onOptionsItemSelected(item)
-        }
-        return super.onOptionsItemSelected(item)
-    }
-
-    @InternalCoroutinesApi
-    private fun deleteMovie(item: MenuItem) {
-
-
-        val movieData = args.likeMovie.result.let {
-            MovieLikeEntity(
-                movieId--,
-                args.likeMovie.result
-            )
-        }
-
-
-        movieData.let {
-            databaseViewModel.deleteLikeMovie(movieData)
-            viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
-
-            likeAdapter.setLikeData(listOf(movieData))
-            movieSave = false
-
-            changeMenuItemColor(item, R.color.white)
-        }
-
-        findNavController().navigate(R.id.action_exampleLikeMovieFragment_to_movieListFragment)
+//        movieData.let {
+//            movieData?.let { it1 -> databaseViewModel.deleteLikeMovie(it1) }
+//            viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
+//
+//            likeAdapter.setLikeData(listOf(movieData) as List<MovieLikeEntity>)
+//            movieSave = false
+//
+//            changeMenuItemColor(item, R.color.white)
+//        }
+//
+//        findNavController().navigate(R.id.action_exampleLikeMovieFragment_to_movieListFragment)
+//
+//
+//        Log.d(Constants.TAG, "deleteMovie: $movieData")
+//    }
 
 
-        Log.d(Constants.TAG, "deleteMovie: $movieData")
-    }
-
-
-    @InternalCoroutinesApi
-    private fun checkSaveMovie(menuItem: MenuItem) {
-
-        // ROOM 과 jSON 객체로 받아온 id 값을 비교
-        databaseViewModel.getAllLikeData.observe(this, { favoritesEntity ->
-            try {
-                for (savedMovie in favoritesEntity) {
-                    if (savedMovie.result.id == args.likeMovie.result?.id) {
-                        changeMenuItemColor(menuItem, R.color.yellow)
-                        movieId = savedMovie.id
-                        movieSave = true
-                    } else {
-                        changeMenuItemColor(menuItem, R.color.white)
-                    }
-                }
-            } catch (e: Exception) {
-                Log.d("DetailsActivity", e.message.toString())
-            }
-        })
-    }
-
-    private fun changeMenuItemColor(item: MenuItem, color: Int) {
-        item.icon.setTint(ContextCompat.getColor(requireContext(), color))
-    }
+//    @InternalCoroutinesApi
+//    private fun checkSaveMovie(menuItem: MenuItem) {
+//
+//        // ROOM 과 jSON 객체로 받아온 id 값을 비교
+//        databaseViewModel.getAllLikeData.observe(this, { favoritesEntity ->
+//            try {
+//                for (savedMovie in favoritesEntity) {
+//                    if (savedMovie.result.id == args.likeMovie?.result?.id) {
+//                        changeMenuItemColor(menuItem, R.color.yellow)
+//                        movieId = savedMovie.id
+//                        movieSave = true
+//                    } else {
+//                        changeMenuItemColor(menuItem, R.color.white)
+//                    }
+//                }
+//            } catch (e: Exception) {
+//                Log.d("DetailsActivity", e.message.toString())
+//            }
+//        })
+//    }
+//
+//    private fun changeMenuItemColor(item: MenuItem, color: Int) {
+//        item.icon.setTint(ContextCompat.getColor(requireContext(), color))
+//    }
 
 
 
