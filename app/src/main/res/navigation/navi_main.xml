@@ -8,16 +8,22 @@
 
     <fragment
         android:id="@+id/movieListFragment"
+        android:name="com.example.movie.ui.fragment.MovieListFragment"
         android:label="영화 리스트"
-        tools:layout="@layout/fragment_moive_list"
-        android:name="com.example.movie.ui.fragment.MovieListFragment">
+        tools:layout="@layout/fragment_moive_list">
 
         <action
             android:id="@+id/action_movieListFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
+            app:destination="@id/exampleMovieFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/from_right" />
         <action
             android:id="@+id/action_movieListFragment_to_exampleLikeMovieFragment"
+            app:enterAnim="@anim/from_right"
+            app:exitAnim="@anim/from_right"
             app:destination="@id/exampleLikeMovieFragment" />
+
+
         <action
             android:id="@+id/action_movieListFragment_to_addMovieFragment"
             app:destination="@id/addMovieRecentFragment" />
@@ -36,18 +42,18 @@
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
-        tools:layout="@layout/fragment_profile"
+        android:name="com.example.movie.ui.fragment.ProfileFragment"
         android:label="프로필"
-        android:name="com.example.movie.ui.fragment.ProfileFragment">
+        tools:layout="@layout/fragment_profile">
 
     </fragment>
 
 
     <fragment
         android:id="@+id/searchPostFragment"
+        android:name="com.example.movie.ui.fragment.SearchPostFragment"
         android:label="영화 찾기"
-        tools:layout="@layout/fragment_search_post"
-        android:name="com.example.movie.ui.fragment.SearchPostFragment">
+        tools:layout="@layout/fragment_search_post">
 
         <action
             android:id="@+id/action_searchPostFragment_to_exampleMovieFragment4"
@@ -72,11 +78,6 @@
             app:destination="@id/exampleMovieFragment" />
 
 
-        <argument
-            android:name="result"
-            android:defaultValue="@null"
-            app:argType="com.example.movie.models.Result"
-            app:nullable="true" />
         <action
             android:id="@+id/action_exampleMovieFragment_self2"
             app:destination="@id/exampleMovieFragment" />
@@ -111,9 +112,7 @@
             android:id="@+id/action_exampleLikeMovieFragment_to_movieListFragment"
             app:destination="@id/movieListFragment" />
 
-        <argument
-            android:name="likeMovie"
-            app:argType="com.example.movie.data.database.entities.MovieLikeEntity" />
+
     </fragment>
 
     <fragment
@@ -128,9 +127,7 @@
             app:destination="@id/exampleMovieFragment" />
 
 
-        <argument
-            android:name="movieList"
-            app:argType="com.example.movie.models.Result" />
+
 
     </fragment>
 
@@ -144,9 +141,7 @@
         <action
             android:id="@+id/action_addPopularMovieFragment_to_exampleMovieFragment"
             app:destination="@id/exampleMovieFragment" />
-        <argument
-            android:name="movieList"
-            app:argType="com.example.movie.models.Result" />
+
     </fragment>
 
     <fragment
@@ -159,9 +154,7 @@
         <action
             android:id="@+id/action_addDiscoverMovieFragment_to_exampleMovieFragment"
             app:destination="@id/exampleMovieFragment" />
-        <argument
-            android:name="movieList"
-            app:argType="com.example.movie.models.Result" />
+
     </fragment>
 
     <fragment
@@ -174,9 +167,7 @@
         <action
             android:id="@+id/action_addTopMovieFragment_to_exampleMovieFragment"
             app:destination="@id/exampleMovieFragment" />
-        <argument
-            android:name="movieList"
-            app:argType="com.example.movie.models.Result" />
+
     </fragment>
 
 
