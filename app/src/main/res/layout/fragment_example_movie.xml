@@ -1,110 +1,227 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:id="@+id/exampleLayout"
-    android:stateListAnimator="@null"
+    xmlns:tools="http://schemas.android.com/tools">
 
-    android:layout_height="match_parent">
+    <data>
 
+        <variable
+            name="movie"
+            type="com.example.movie.models.MoviesItem" />
+    </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
+
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <ImageView
-            android:id="@+id/exam_img"
-            android:layout_width="150dp"
-            android:layout_height="200dp"
-            android:layout_margin="10dp"
-            android:scaleType="matrix"
-            android:src="@drawable/test_post"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+        android:layout_height="match_parent">
 
 
-        <TextView
-            android:id="@+id/exam_title"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="제목"
-            android:textAlignment="center"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="@+id/exam_img"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.142"
-            app:layout_constraintStart_toEndOf="@+id/exam_img"
-            app:layout_constraintTop_toTopOf="@+id/exam_img"
-            app:layout_constraintVertical_bias="0.213" />
-
-        <TextView
-            android:id="@+id/textView4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="12dp"
-            android:text="제작 연도 :"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintStart_toEndOf="@+id/exam_img"
-            app:layout_constraintTop_toTopOf="@+id/release_text"
-            app:layout_constraintVertical_bias="0.0" />
-
-        <TextView
-            android:id="@+id/release_text"
-            android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:text="2021-04-15"
-            app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.066"
-            app:layout_constraintStart_toEndOf="@+id/textView4"
-            app:layout_constraintTop_toBottomOf="@+id/exam_title"
-            app:layout_constraintVertical_bias="0.378" />
-
-        <RatingBar
-            android:id="@+id/movie_rating"
-            style="@style/Widget.AppCompat.RatingBar.Small"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:layout_constraintBottom_toTopOf="@+id/textView5"
-            app:layout_constraintEnd_toEndOf="@+id/release_text"
-            app:layout_constraintHorizontal_bias="0.527"
-            app:layout_constraintLeft_toLeftOf="parent"
-            app:layout_constraintRight_toRightOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/exam_img"
-            app:layout_constraintTop_toTopOf="@+id/textView4"
-            app:layout_constraintVertical_bias="0.416" />
-
-        <TextView
-            android:id="@+id/textView5"
+        <RelativeLayout
+            android:id="@+id/dd"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:gravity="center"
-            android:text="줄거리"
-            android:textColor="@color/blue"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintTop_toBottomOf="@+id/exam_img" />
+            android:layout_height="wrap_content">
 
-        <TextView
-            android:id="@+id/exam_contents"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dp"
-            android:layout_marginTop="20dp"
-            android:text="2009년 미국인 지질학자 에이드리언 헴슬리는 인도에 있는 천체물리학자 사트남 츠루타니 박사를 만나 엄청난 태양 플레어로 생겨난 중성미자가 지구 중심부의 온도를 급격하게 상승시킨다는 사실을 발견한다. 에이드리언은 백악관 비서실장 칼 앤하이저에게 이 사실을 보고하고 앤하이저를 통해서 미국의 대통령과 만난다.
-과 함께 그 곳을 탈출한다. 찰리는 칼데라 폭발을 중계하다 죽는다. 방주가 중국에 있는 걸 알고 가족은 큰 비행기를 찾기 위해 완전히 황폐해진 라스"
-            android:textColor="@color/black"
-            android:textSize="20dp"
+            <RelativeLayout
+                android:id="@+id/movie_info"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_alignParentTop="true"
+                android:layout_centerHorizontal="true"
+                android:background="#FFFFFF"
+                android:elevation="10sp">
 
-            app:layout_constraintTop_toBottomOf="@+id/textView5"
-            tools:layout_editor_absoluteX="0dp" />
+                <LinearLayout
+                    android:id="@+id/movie_info_post"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:orientation="vertical">
+
+                    <ImageView
+                        android:id="@+id/like_exam_img"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:adjustViewBounds="false"
+                        android:elevation="10sp"
+                        android:src="@drawable/ic_baseline_movie_24"
+                        app:movieImage="@{movie.poster}" />
+
+                    <TextView
+                        android:id="@+id/like_release_text"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:fontFamily="@font/notosansregular"
+                        android:gravity="center_horizontal"
+                        android:includeFontPadding="false"
+                        android:text="@{movie.release}"
+
+                        android:textColor="@color/black" />
+                </LinearLayout>
 
 
+                <LinearLayout
+                    android:id="@+id/movie_info_rating"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:layout_toEndOf="@id/movie_info_post"
+                    android:orientation="vertical">
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
-</ScrollView>
+                    <TextView
+                        android:id="@+id/like_exam_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10sp"
+                        android:fontFamily="@font/cafe24ohsquare"
+
+                        android:text="@{movie.title}"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        android:textStyle="bold" />
+
+                    <RatingBar
+                        android:id="@+id/like_movie_rating"
+                        style="@style/Widget.AppCompat.RatingBar.Indicator"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10sp"
+                        app:movieRating="@{movie.voteAver}" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="end"
+                        android:text="@{movie.voteCount}" />
+                </LinearLayout>
+
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/movie_info_three"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_info"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10sp"
+
+                android:background="@drawable/movie_info_background">
+
+                <LinearLayout
+                    android:id="@+id/movie_history"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="10sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="10dp"
+                        android:text="장르" />
+
+                    <TextView
+                        android:id="@+id/genre"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:layout_marginStart="20sp"
+                        android:fontFamily="@font/cafe24ohsquare"
+                        android:includeFontPadding="false"
+                        android:text="@{movie.genres}"
+                        android:textColor="@color/black"
+                        android:textSize="30sp" />
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/movie_actors"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="20dp"
+                    android:layout_toEndOf="@id/movie_history"
+                    android:elevation="10sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="배우들" />
+
+                    <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/ic_baseline_people_alt_80" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginStart="30sp"
+                    android:layout_toEndOf="@id/movie_actors"
+                    android:elevation="10sp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:text="상영시간" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/notosansblack"
+                        android:text="1시간15분"
+                        android:textColor="@color/black"
+                        android:textSize="20sp"
+                        app:movieRunTime="@{movie.runtime}" />
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/movie_info_three">
+
+                <TextView
+                    android:id="@+id/textView5"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="10dp"
+                    android:text="줄거리"
+                    android:textColor="@color/blue"
+                    android:textSize="20dp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/like_exam_contents"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/textView5"
+                    android:layout_margin="10sp"
+                    android:fontFamily="@font/notodansmedium"
+                    android:includeFontPadding="false"
+                    android:text="@{movie.overview}"
+                    android:textAllCaps="true"
+                    android:textColor="@color/black"
+                    android:textSize="20sp"
+
+
+                    />
+
+            </RelativeLayout>
+        </RelativeLayout>
+    </ScrollView>
+</layout>
