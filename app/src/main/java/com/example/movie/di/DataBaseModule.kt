@@ -13,7 +13,6 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-//DataBase에 쓸것을여깄다 씀
 object DataBaseModule {
 
 
@@ -32,4 +31,8 @@ object DataBaseModule {
     @Singleton
     @Provides
     fun provideDao(database: MovieDatabase) = database.movieDao()
+
+    @Singleton
+    @Provides
+    fun userDao(database: MovieDatabase) = database.userDao()
 }
