@@ -1,242 +1,249 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.core.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:background="@color/black">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <data>
+
+    </data>
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:background="@color/black">
 
-        <com.sergivonavi.materialbanner.Banner
-            android:id="@+id/banner"
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:buttonLeftText="turn on wifi"
-            android:visibility="gone"
-            app:buttonRightText="dimmis"
-            app:buttonsTextColor="@color/blue"
-            app:messageTextColor="@color/red"
-            app:buttonsRippleColor="@color/red"
-            app:icon="@drawable/ic_baseline_wifi_off_24"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:messageText="You have lost connection to the Internet." />
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <com.sergivonavi.materialbanner.Banner
+                android:id="@+id/banner"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:buttonLeftText="turn on wifi"
+                android:visibility="gone"
+                app:buttonRightText="dimmis"
+                app:buttonsTextColor="@color/blue"
+                app:messageTextColor="@color/red"
+                app:buttonsRippleColor="@color/red"
+                app:icon="@drawable/ic_baseline_wifi_off_24"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:messageText="You have lost connection to the Internet." />
 
 
-        <TextView
-            android:id="@+id/textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:text="내가 찜한 콘텐츠"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="@+id/like_recycler"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintVertical_bias="0.049" />
+            <TextView
+                android:id="@+id/textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:text="내가 찜한 콘텐츠"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="@+id/like_recycler"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.049" />
 
 
-        <com.todkars.shimmer.ShimmerRecyclerView
-            android:id="@+id/like_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:divider="@null"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:reverseLayout="true"
-            app:shimmer_recycler_layout="@layout/movie_list_row_layout"
-            tools:layout_editor_absoluteX="0dp" />
+            <com.todkars.shimmer.ShimmerRecyclerView
+                android:id="@+id/like_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:divider="@null"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:reverseLayout="true"
+                app:shimmer_recycler_layout="@layout/movie_list_row_layout"
+                tools:layout_editor_absoluteX="0dp" />
 
-        <TextView
-            android:id="@+id/textView2"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:text="인기있는 포스트"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/textView"
-            app:layout_constraintStart_toStartOf="@+id/textView"
-            app:layout_constraintTop_toBottomOf="@+id/no_data_textView" />
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="인기있는 포스트"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/textView"
+                app:layout_constraintStart_toStartOf="@+id/textView"
+                app:layout_constraintTop_toBottomOf="@+id/no_data_textView" />
 
-        <TextView
-            android:id="@+id/more_popular"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:clickable="true"
-            android:text="더보기"
-            android:textColor="@color/green"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/textView2"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/more_popular"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:text="더보기"
+                android:textColor="@color/green"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.todkars.shimmer.ShimmerRecyclerView
-            android:id="@+id/popular_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:divider="@null"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintStart_toStartOf="@+id/like_recycler"
-            app:layout_constraintTop_toBottomOf="@+id/textView2"
-            app:reverseLayout="true"
-            tools:listitem="@layout/movie_list_row_layout" />
+            <com.todkars.shimmer.ShimmerRecyclerView
+                android:id="@+id/popular_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:divider="@null"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintStart_toStartOf="@+id/like_recycler"
+                app:layout_constraintTop_toBottomOf="@+id/textView2"
+                app:reverseLayout="true"
+                tools:listitem="@layout/movie_list_row_layout" />
 
-        <TextView
-            android:id="@+id/textView3"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="최근에 올라온 포스트"
-            android:textColor="@color/white"
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="최근에 올라온 포스트"
+                android:textColor="@color/white"
 
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/textView2"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView2"
-            app:layout_constraintTop_toBottomOf="@+id/popular_recycler" />
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/textView2"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView2"
+                app:layout_constraintTop_toBottomOf="@+id/popular_recycler" />
 
-        <TextView
-            android:id="@+id/more_recent"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="더보기"
-            android:textColor="@color/green"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/textView3"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/more_recent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/green"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/textView3"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.todkars.shimmer.ShimmerRecyclerView
-            android:id="@+id/recent_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/textView3"
-            app:reverseLayout="true"
-            app:shimmer_recycler_item_count="3"
-            tools:layout_editor_absoluteX="16dp"
-            tools:listitem="@layout/movie_list_row_layout" />
+            <com.todkars.shimmer.ShimmerRecyclerView
+                android:id="@+id/recent_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@+id/textView3"
+                app:reverseLayout="true"
+                app:shimmer_recycler_item_count="3"
+                tools:layout_editor_absoluteX="16dp"
+                tools:listitem="@layout/movie_list_row_layout" />
 
-        <TextView
-            android:id="@+id/text4"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="고평점 영화"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@+id/textView3"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/textView3"
-            app:layout_constraintTop_toBottomOf="@+id/recent_recycler" />
+            <TextView
+                android:id="@+id/text4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="고평점 영화"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@+id/textView3"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/textView3"
+                app:layout_constraintTop_toBottomOf="@+id/recent_recycler" />
 
-        <TextView
-            android:id="@+id/more_top"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="더보기"
-            android:textColor="@color/green"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/text4"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/more_top"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/green"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/text4"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <TextView
-            android:id="@+id/text5"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:text="discover movie"
-            android:textColor="@color/white"
-            android:textSize="20dp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="@id/text4"
-            app:layout_constraintHorizontal_bias="0.0"
-            app:layout_constraintStart_toStartOf="@+id/text4"
-            app:layout_constraintTop_toBottomOf="@id/top_recycler" />
+            <TextView
+                android:id="@+id/text5"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:text="discover movie"
+                android:textColor="@color/white"
+                android:textSize="20dp"
+                android:textStyle="bold"
+                app:layout_constraintEnd_toEndOf="@id/text4"
+                app:layout_constraintHorizontal_bias="0.0"
+                app:layout_constraintStart_toStartOf="@+id/text4"
+                app:layout_constraintTop_toBottomOf="@id/top_recycler" />
 
-        <TextView
-            android:id="@+id/more_discover"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="더보기"
-            android:textColor="@color/green"
-            android:visibility="invisible"
-            app:layout_constraintBottom_toBottomOf="@+id/text5"
-            app:layout_constraintEnd_toEndOf="parent" />
+            <TextView
+                android:id="@+id/more_discover"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="더보기"
+                android:textColor="@color/green"
+                android:visibility="invisible"
+                app:layout_constraintBottom_toBottomOf="@+id/text5"
+                app:layout_constraintEnd_toEndOf="parent" />
 
-        <com.todkars.shimmer.ShimmerRecyclerView
-            android:id="@+id/discover_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/text5"
+            <com.todkars.shimmer.ShimmerRecyclerView
+                android:id="@+id/discover_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@+id/text5"
 
-            app:reverseLayout="true"
-            app:shimmer_recycler_item_count="3"
-            tools:layout_editor_absoluteX="0dp"
-            tools:listitem="@layout/movie_list_row_layout" />
+                app:reverseLayout="true"
+                app:shimmer_recycler_item_count="3"
+                tools:layout_editor_absoluteX="0dp"
+                tools:listitem="@layout/movie_list_row_layout" />
 
-        <com.todkars.shimmer.ShimmerRecyclerView
-            android:id="@+id/top_recycler"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:orientation="horizontal"
-            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-            app:layout_constraintTop_toBottomOf="@+id/text4"
-            app:reverseLayout="true"
-            app:shimmer_recycler_item_count="3"
-            tools:layout_editor_absoluteX="0dp"
-            tools:listitem="@layout/movie_list_row_layout" />
+            <com.todkars.shimmer.ShimmerRecyclerView
+                android:id="@+id/top_recycler"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp"
+                android:orientation="horizontal"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintTop_toBottomOf="@+id/text4"
+                app:reverseLayout="true"
+                app:shimmer_recycler_item_count="3"
+                tools:layout_editor_absoluteX="0dp"
+                tools:listitem="@layout/movie_list_row_layout" />
 
-        <ImageView
-            android:id="@+id/no_data_imageView"
-            android:layout_width="200dp"
-            android:layout_height="250dp"
-            android:layout_marginTop="15dp"
-            android:src="@drawable/ic_no_data"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.54"
-            app:layout_constraintStart_toStartOf="@+id/like_recycler"
-            app:layout_constraintTop_toBottomOf="@+id/textView"
-            app:layout_constraintVertical_bias="0.0" />
+            <ImageView
+                android:id="@+id/no_data_imageView"
+                android:layout_width="200dp"
+                android:layout_height="250dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/ic_no_data"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.54"
+                app:layout_constraintStart_toStartOf="@+id/like_recycler"
+                app:layout_constraintTop_toBottomOf="@+id/textView"
+                app:layout_constraintVertical_bias="0.0" />
 
-        <TextView
-            android:id="@+id/no_data_textView"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="15dp"
-            android:text="@string/add_post"
-            android:textColor="@color/white"
-            android:textSize="16sp"
-            android:visibility="visible"
-            app:layout_constraintBottom_toTopOf="@+id/textView2"
-            app:layout_constraintEnd_toEndOf="@+id/no_data_imageView"
-            app:layout_constraintHorizontal_bias="0.159"
-            app:layout_constraintStart_toStartOf="@+id/no_data_imageView"
-            app:layout_constraintTop_toBottomOf="@+id/no_data_imageView" />
+            <TextView
+                android:id="@+id/no_data_textView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp"
+                android:text="@string/add_post"
+                android:textColor="@color/white"
+                android:textSize="16sp"
+                android:visibility="visible"
+                app:layout_constraintBottom_toTopOf="@+id/textView2"
+                app:layout_constraintEnd_toEndOf="@+id/no_data_imageView"
+                app:layout_constraintHorizontal_bias="0.159"
+                app:layout_constraintStart_toStartOf="@+id/no_data_imageView"
+                app:layout_constraintTop_toBottomOf="@+id/no_data_imageView" />
 
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
-</androidx.core.widget.NestedScrollView>
+    </androidx.core.widget.NestedScrollView>
+</layout>

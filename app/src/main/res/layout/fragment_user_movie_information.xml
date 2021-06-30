@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <data>
+
+        <import type="android.view.View" />
+
+        <variable
+            name="fragment"
+            type="com.example.movie.ui.user.UserMovieInformationFragment" />
+
+        <variable
+            name="viewModel"
+            type="com.example.movie.viewmodels.UserViewModel" />
+    </data>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+
+        android:background="@color/materialBlue400">
+
+
+        <TextView
+            android:id="@+id/textView7"
+
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="100dp"
+            android:fontFamily="@font/notosansblack"
+            android:includeFontPadding="false"
+            android:text="이것만 하면 끝나요 ! \n 입력해주셔서 감사합니다."
+            android:textColor="@color/white"
+            android:textSize="30sp"
+            android:textStyle="bold" />
+
+        <RelativeLayout
+            android:id="@+id/cardView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/textView7"
+            android:layout_alignParentBottom="true"
+            android:layout_marginTop="50dp"
+            android:background="@drawable/user_background"
+            android:orientation="horizontal"
+            app:cardCornerRadius="10dp"
+            app:cardElevation="30dp">
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_centerInParent="true"
+                android:orientation="vertical"
+
+                android:padding="30dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:elevation="10sp"
+                        android:fontFamily="@font/nanumsquareroundeb"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:textColorHint="@color/htmlCornFlowerBlue"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/notodansmedium"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/notodansmedium"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/notodansmedium"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/notodansmedium"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="@dimen/movie_info_btn_margin_bottom"
+                    android:background="@drawable/movie_info_edtxt"
+                    android:orientation="vertical">
+
+                    <EditText
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="@font/notodansmedium"
+                        android:hint="좋아하는장소"
+                        android:includeFontPadding="false"
+                        android:padding="15dp"
+                        android:textColor="@color/black"
+                        android:textSize="15sp" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_marginBottom="30dp"
+                android:background="@drawable/btn_background"
+                android:elevation="10dp"
+                android:fontFamily="@font/notosansbold"
+                android:includeFontPadding="false"
+                android:onClick="@{()->viewModel.checkBtn()}"
+                android:paddingStart="@dimen/movie_info_btn"
+                android:paddingTop="15dp"
+                android:paddingEnd="@dimen/movie_info_btn"
+                android:paddingBottom="15dp"
+                android:text="완료하기"
+                android:textColor="@color/white"
+                android:textSize="20sp" />
+
+
+            <com.airbnb.lottie.LottieAnimationView
+                android:id="@+id/movie_loading"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="@{viewModel.isLoading ? View.VISIBLE : View.GONE}"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:lottie_autoPlay="true"
+                app:lottie_loop="true"
+                app:lottie_rawRes="@raw/movie_animation" />
+        </RelativeLayout>
+    </RelativeLayout>
+</layout>
