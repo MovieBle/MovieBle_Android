@@ -4,22 +4,26 @@ import android.app.Application
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
-import android.util.Log
 import androidx.lifecycle.*
 import com.example.movie.data.Repository
 import com.example.movie.models.Movie
-import com.example.movie.data.database.entities.MovieLikeEntity
-import com.example.movie.data.database.entities.UserEntity
 import com.example.movie.data.database.entities.movie.*
 import com.example.movie.untils.NetworkResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.InternalCoroutinesApi
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 import retrofit2.Response
 import javax.inject.Inject
 
+/***
+코루틴을 사용하는이유
+
+네트워크 호출이나 디스크 작업과 같은 장기 실행 작업을 관리하면서 앱의 응답성을 유지하는 깔끔하고 간소화된 비동기 처리를 할 수 있다.
+
+ */
+
+// 비동기 처리로 viesModelScope 에 넣음 (데이터 추가)
 @InternalCoroutinesApi
 @HiltViewModel
 class DatabaseViewModel @Inject constructor(
@@ -29,19 +33,26 @@ class DatabaseViewModel @Inject constructor(
 ) :
     AndroidViewModel(application) {
 
-    // 데이터가 있지 여부
-    val emptyDatabase: MutableLiveData<Boolean> = MutableLiveData(true)
+
+    val emptyDatabase=MutableLiveData<Boolean>()
+    private val _getMovie: LiveData<List<MovieEntity>> =
+        repository.local.getAllMovie().asLiveData()
+    val getMovie: LiveData<List<MovieEntity>> = _getMovie
+
+    private val _getLikeMovie: LiveData<List<MovieLikeEntity>> =
+        repository.local.getAllLikeMovie().asLiveData()
+    val getLikeMovie: LiveData<List<MovieLikeEntity>> = _getLikeMovie
 
 
-    val getAllData: LiveData<List<MovieEntity>> = repository.local.getAllMovie().asLiveData()
+    private val _lsLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> get() = _lsLoading
 
-    val getAllMovie: MutableLiveData<NetworkResult<Movie>> = MutableLiveData()
+
+    private val _getRandomMovie = MutableLiveData<NetworkResult<Movie>>()
+    val getRandomMovie: MutableLiveData<NetworkResult<Movie>> get() = _getRandomMovie
 
 
-    companion object {
-        const val TAG = "DataBase"
-    }
-
+    // 데이터를 추가한다.
     @InternalCoroutinesApi
     fun insertMovie(movie: MovieEntity) {
         viewModelScope.launch(Dispatchers.IO) {
@@ -49,44 +60,58 @@ class DatabaseViewModel @Inject constructor(
         }
     }
 
-
+    // 데이터를 추가한다.
     @InternalCoroutinesApi
-    fun getAllMovie(page: Int) = viewModelScope.launch {
+    fun insertLikeMovie(movie: MovieLikeEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.insertLikeMovie(movie)
+        }
+    }
+
+    fun deleteLikeMovie(movie: MovieLikeEntity) {
+        viewModelScope.launch(Dispatchers.IO) {
+            repository.local.deleteLikeMovie(movie)
+        }
+    }
 
 
-        getDiscoverMoviesSafeCall(page)
+    // 비동기 처리로 서버에서 받아온 data 를 뿌려준다.
+    @InternalCoroutinesApi
+    fun getAllMovie(id: Int,page: Int) = viewModelScope.launch {
+        getDiscoverMoviesSafeCall(id,page)
 
     }
 
-    @InternalCoroutinesApi
-    private fun offlineCashMovie(movie: Movie) {
 
-        val movieEntity = MovieEntity(movie)
+    @InternalCoroutinesApi
+    private fun offlineCashMovie(id:Int,movie: Movie) {
+        val movieEntity = MovieEntity(id,movie[0])
         insertMovie(movieEntity)
     }
 
-
     @InternalCoroutinesApi
-    private suspend fun getDiscoverMoviesSafeCall(page: Int) {
+    private suspend fun getDiscoverMoviesSafeCall(id:Int,page: Int) {
 
-        getAllMovie.value = NetworkResult.Loading()
+        getRandomMovie.value = NetworkResult.Loading()
         //인터넷이 연결되었을 때
         if (hasInternetConnection()) {
 
+            try {
 
-            val response = repository.remote.getMovie(page)
-            getAllMovie.value = handleMovieResponse(response)
+                val response = repository.remote.getMovie(page)
+                getRandomMovie.value = handleMovieResponse(response)
 
 
-            val movieData = getAllMovie.value!!.data
-            Log.d(TAG, "getDiscoverMoviesSafeCall: $movieData")
+                val movieData = getRandomMovie.value!!.data
+                if (movieData != null) {
 
-            if (movieData != null) {
+                    offlineCashMovie(id,movieData)
+                }
 
-                offlineCashMovie(movieData)
+            } catch (e: Exception) {
+
+                getRandomMovie.value = NetworkResult.Error("영화를 찾을수 없음")
             }
-
-
         }
     }
 
@@ -140,9 +165,9 @@ class DatabaseViewModel @Inject constructor(
             else -> false
         }
     }
-
-
-
+    fun checkIfDatabaseEmpty(movieData: List<MovieLikeEntity>) {
+        emptyDatabase.value = movieData.isEmpty() //데이터 있음
+    }
 
 }
 

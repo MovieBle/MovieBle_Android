@@ -1,98 +1,55 @@
 package com.example.movie.ui.fragment
 
-import android.annotation.SuppressLint
-import android.os.Bundle
-import android.view.*
-import android.widget.RatingBar
-import android.widget.TextView
+import android.util.Log
+import android.view.Menu
+import android.view.MenuInflater
+import android.view.MenuItem
+import android.view.View
 import androidx.core.content.ContextCompat
-import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
-import androidx.recyclerview.widget.RecyclerView
+import androidx.navigation.fragment.navArgs
+import com.example.movie.R
+import com.example.movie.base.UtilityBase
+import com.example.movie.data.database.entities.movie.MovieLikeEntity
 import com.example.movie.databinding.FragmentExampleMovieBinding
 import com.example.movie.viewmodels.DatabaseViewModel
+import com.google.android.material.snackbar.Snackbar
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.InternalCoroutinesApi
-import java.util.*
 
 
-@Suppress("CAST_NEVER_SUCCEEDS", "UNREACHABLE_CODE")
-@InternalCoroutinesApi
 @AndroidEntryPoint
+class ExampleMovieFragment :
+    UtilityBase.BaseFragment<FragmentExampleMovieBinding>(R.layout.fragment_example_movie) {
 
-class ExampleMovieFragment : Fragment() {
-
-
-    // 저장 -> movieSave true
-    // 삭제 -> movieSave false
-
-    // liveData로 비동기처리하면서 movieSave 상태에 따라 snackBar에 뜨는 text변경
-    private var _binding: FragmentExampleMovieBinding? = null
-     val binding get() = _binding!!
-
-    //private val args by navArgs<ExampleMovieFragmentArgs>()
-    private val databaseViewModel: DatabaseViewModel by viewModels()
-    private lateinit var contents: TextView
-    private lateinit var examText: TextView
-    private lateinit var rating: RatingBar
-    private lateinit var releaseText: TextView
-    private var movieSave = false
-
-
-    private val chatRecycler: RecyclerView by lazy {
-
-        binding.recyclerView
-    }
     var movieId: Int = 0
+    var movieSave = false
+    private val args by navArgs<ExampleMovieFragmentArgs>()
 
-
-    @SuppressLint("ResourceAsColor")
-    override fun onCreateView(
-        inflater: LayoutInflater,
-        container: ViewGroup?,
-        savedInstanceState: Bundle?
-    ): View {
-
-        _binding = FragmentExampleMovieBinding.inflate(inflater, container, false)
-
-
-
-        contents = binding.examContents
-        examText = binding.examTitle
-        rating = binding.movieRating
-        releaseText = binding.releaseText
-
-//        args.result?.poster_path?.let { viewModel.imageLoad(binding.examImg, it) }
-
-//        rating.rating = args.result?.vote_average!!.toFloat() / 2
-//
-//        contents.text = args.result?.overview
-//        examText.text = args.result?.title
-//        releaseText.text = args.result?.release_date
-
+    @InternalCoroutinesApi
+    private val databaseViewModel: DatabaseViewModel by viewModels()
+    override fun FragmentExampleMovieBinding.onCreateView() {
         setHasOptionsMenu(true)
+    }
 
-        return binding.root
+    override fun FragmentExampleMovieBinding.onViewCreated() {
+        binding.movie = args.movie
+    }
+
+    @InternalCoroutinesApi
+    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
+        inflater.inflate(R.menu.menu_exam, menu)
+        val menuItem = menu.findItem(R.id.menu_action_star)
+        changeMenuItemColor(menuItem, R.color.white)
+        checkSaveMovie(menuItem)
+
     }
 
 
-
-//    override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
-//        inflater.inflate(R.menu.menu_exam, menu)
-//        val menuItem = menu.findItem(R.id.menu_action_star)
-//        changeMenuItemColor(menuItem, R.color.white)
-//        checkSaveMovie(menuItem)
-//    }
-
-
-
-    /*
+    @InternalCoroutinesApi
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
-
         if (item.itemId == R.id.menu_action_star && !movieSave) {
             insertMovie(item)
-
-
         } else if (item.itemId == R.id.menu_action_star && movieSave) {
             deleteMovie(item)
         } else {
@@ -101,99 +58,106 @@ class ExampleMovieFragment : Fragment() {
         return super.onOptionsItemSelected(item)
     }
 
-     */
 
-/*
-//    private fun checkSaveMovie(menuItem: MenuItem) {
-//
-//        // ROOM 과 jSON 객체로 받아온 id 값을 비교
-//        databaseViewModel.getAllLikeData.observe(this, { favoritesEntity ->
-//            try {
-//                for (savedMovie in favoritesEntity) {
-//                    if (savedMovie.result.id == args.result?.id) {
-//                        changeMenuItemColor(menuItem, R.color.yellow)
-//                        movieId = savedMovie.id
-//                        movieSave = true
-//                    } else {
-//                        changeMenuItemColor(menuItem, R.color.white)
-//                    }
-//                }
-//            } catch (e: Exception) {
-//                Log.d("DetailsActivity", e.message.toString())
-//            }
-//        })
-//    }
+    @InternalCoroutinesApi
+    private fun checkSaveMovie(menuItem: MenuItem) {
+
+        // ROOM 과 jSON 객체로 받아온 id 값을 비교
+        databaseViewModel.getMovie.observe(this, {
+            try {
+                for (savedMovie in it) {
+                    if (savedMovie.id == args.movie.budget) {
+                        changeMenuItemColor(menuItem, R.color.yellow)
+                        movieId = savedMovie.id
+                        movieSave = true
+                    } else {
+                        changeMenuItemColor(menuItem, R.color.white)
+                    }
+                }
+            } catch (e: Exception) {
+                Log.d("DetailsActivity", e.message.toString())
+            }
+        })
+    }
 
     //데이터 저장
-
+    @InternalCoroutinesApi
     private fun insertMovie(item: MenuItem) {
-        val movieData = args.result.let {
-            MovieLikeEntity(
-                movieId++,
-                args.result!!
-            )
-        }
+        val movieData = MovieLikeEntity(
+            movieId++,
+            args.movie.adult,
+            args.movie.backdrop,
+            args.movie.budget,
+            args.movie.cast,
+            args.movie.director,
+            args.movie.genres,
+            args.movie.overview,
+            args.movie.poster,
+            args.movie.production,
+            args.movie.release,
+            args.movie.runtime,
+            args.movie.status,
+            args.movie.title,
+            args.movie.video,
+            args.movie.voteAver,
+            args.movie.voteCount
 
-//        databaseViewModel.insertLikeMovie(movieData)
-
-        viewModel.showSnackBar("포스트가 저장되었습니다.", requireView())
-
-        movieSave = true
-
-
-        likeAdapter.setLikeData(listOf(movieData))
-
-        changeMenuItemColor(item, R.color.yellow)
-
-        Log.d(
-            TAG,
-            "insertMovie: ${BASE_IMG_URL + args.result?.poster_path}, ${args.result?.title}"
         )
-    }'
+        databaseViewModel.insertLikeMovie(movieData)
+        showSnackBar("포스트가 저장되었습니다.", requireView())
+        movieSave = true
+        changeMenuItemColor(item, R.color.yellow)
+    }
 
- */
-/*
+
+    @InternalCoroutinesApi
     private fun deleteMovie(item: MenuItem) {
+        val movieData = MovieLikeEntity(
+            movieId--,
+            args.movie.adult,
+            args.movie.backdrop,
+            args.movie.budget,
+            args.movie.cast,
+            args.movie.director,
+            args.movie.genres,
+            args.movie.overview,
+            args.movie.poster,
+            args.movie.production,
+            args.movie.release,
+            args.movie.runtime,
+            args.movie.status,
+            args.movie.title,
+            args.movie.video,
+            args.movie.voteAver,
+            args.movie.voteCount
+        )
 
+        movieData.let {
+            databaseViewModel.deleteLikeMovie(it)
 
-        val movieData = args.result?.let {
-            MovieLikeEntity(
-                movieId--,
-                args.result!!
-            )
+            movieSave = false
+            changeMenuItemColor(item, R.color.white)
+            showSnackBar("포스트가 지워졌습니다.", requireView())
+
         }
 
- */
 
-
-//        movieData?.let {
-//            databaseViewModel.deleteLikeMovie(it)
-//            likeAdapter.setLikeData(listOf(movieData))
-//            viewModel.showSnackBar("포스트가 지워졌습니다.", requireView())
-//
-//
-//            movieSave = false
-//
-//            changeMenuItemColor(item, R.color.white)
-//
-//        }
-
-
-
-      //  Log.d(TAG, "deleteMovie: $movieData")
-
-
-    //}
-
-
+    }
 
     private fun changeMenuItemColor(item: MenuItem, color: Int) {
         item.icon.setTint(ContextCompat.getColor(requireContext(), color))
     }
 
-
-
+    private fun showSnackBar(message: String, view: View) {
+        Snackbar.make(
+            view,
+            message,
+            Snackbar.LENGTH_SHORT
+        ).setAction("Okay") {}
+            .show()
+    }
 
 }
+
 
 
