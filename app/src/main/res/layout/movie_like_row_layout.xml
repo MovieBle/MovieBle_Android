@@ -3,11 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
-   <data>
+    <data>
 
         <variable
             name="movie"
-            type="com.example.movie.models.MoviesItem" />
+            type="com.example.movie.data.database.entities.movie.MovieLikeEntity" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

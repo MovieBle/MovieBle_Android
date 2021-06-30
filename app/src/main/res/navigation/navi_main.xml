@@ -17,28 +17,14 @@
             app:destination="@id/exampleMovieFragment"
             app:enterAnim="@anim/from_right"
             app:exitAnim="@anim/from_right" />
-        <action
-            android:id="@+id/action_movieListFragment_to_exampleLikeMovieFragment"
-            app:enterAnim="@anim/from_right"
-            app:exitAnim="@anim/from_right"
-            app:destination="@id/exampleLikeMovieFragment" />
 
 
-        <action
-            android:id="@+id/action_movieListFragment_to_addMovieFragment"
-            app:destination="@id/addMovieRecentFragment" />
         <action
             android:id="@+id/action_movieListFragment_to_addPopularMovieFragment"
             app:destination="@id/addPopularMovieFragment" />
-        <action
-            android:id="@+id/action_movieListFragment_to_addTopMovieFragment"
-            app:destination="@id/addTopMovieFragment" />
-        <action
-            android:id="@+id/action_movieListFragment_to_addDiscoverMovieFragment"
-            app:destination="@id/addDiscoverMovieFragment" />
-        <action
-            android:id="@+id/action_movieListFragment_to_addMovieRecentFragment"
-            app:destination="@id/addMovieRecentFragment" />
+
+
+
     </fragment>
     <fragment
         android:id="@+id/profileFragment"
@@ -73,102 +59,34 @@
             android:id="@+id/action_exampleMovieFragment_to_searchPostFragment"
             app:destination="@id/searchPostFragment" />
 
-        <action
-            android:id="@+id/action_exampleMovieFragment_self"
-            app:destination="@id/exampleMovieFragment" />
-
-
-        <action
-            android:id="@+id/action_exampleMovieFragment_self2"
-            app:destination="@id/exampleMovieFragment" />
-        <action
-            android:id="@+id/action_exampleMovieFragment_self3"
-            app:destination="@id/exampleMovieFragment" />
-        <action
-            android:id="@+id/action_exampleMovieFragment_to_addMovieFragment"
-            app:destination="@id/addMovieRecentFragment" />
-        <action
-            android:id="@+id/action_exampleMovieFragment_self4"
-            app:destination="@id/exampleMovieFragment" />
-        <action
-            android:id="@+id/action_exampleMovieFragment_to_addTopMovieFragment"
-            app:destination="@id/addTopMovieFragment" />
-        <action
-            android:id="@+id/action_exampleMovieFragment_to_addDiscoverMovieFragment"
-            app:destination="@id/addDiscoverMovieFragment" />
+        <argument
+            android:name="movie"
+            app:argType="com.example.movie.models.MoviesItem" />
 
 
     </fragment>
 
-    <fragment
-        android:id="@+id/exampleLikeMovieFragment"
-        android:name="com.example.movie.ui.fragment.ExampleMovieLikeFragment"
-        android:label="영화"
-        app:popUpTo="@id/exampleMovieFragment"
-        tools:layout="@layout/fragment_example_like_movie">
-
-
-        <action
-            android:id="@+id/action_exampleLikeMovieFragment_to_movieListFragment"
-            app:destination="@id/movieListFragment" />
-
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/addMovieRecentFragment"
-        android:name="com.example.movie.ui.fragment.addMovie.AddMovieRecentFragment"
-        android:label="최근 영화"
-        tools:layout="@layout/fragment_add_recent_movie">
-
-
-        <action
-            android:id="@+id/action_addMovieRecentFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
-
-
-
-
-    </fragment>
 
     <fragment
         android:id="@+id/addPopularMovieFragment"
         android:name="com.example.movie.ui.fragment.addMovie.AddPopularMovieFragment"
-        android:label="유명 영화"
-        tools:layout="@layout/fragment_add_recent_movie">
+        android:label="영화"
+        tools:layout="@layout/fragment_popular_add_movie">
 
-
-        <action
-            android:id="@+id/action_addPopularMovieFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
 
     </fragment>
 
-    <fragment
-        android:id="@+id/addDiscoverMovieFragment"
-        android:name="com.example.movie.ui.fragment.addMovie.AddDiscoverMovieFragment"
-        android:label="Discover 영화"
-        tools:layout="@layout/fragment_add_recent_movie">
 
 
-        <action
-            android:id="@+id/action_addDiscoverMovieFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
-
-    </fragment>
-
-    <fragment
-        android:id="@+id/addTopMovieFragment"
-        android:name="com.example.movie.ui.fragment.addMovie.AddTopMovieFragment"
-        android:label="Top 영화"
-        tools:layout="@layout/fragment_add_recent_movie">
 
 
-        <action
-            android:id="@+id/action_addTopMovieFragment_to_exampleMovieFragment"
-            app:destination="@id/exampleMovieFragment" />
 
-    </fragment>
+
+
+
+
+
+
 
 
 </navigation>

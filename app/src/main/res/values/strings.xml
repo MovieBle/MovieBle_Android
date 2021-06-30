@@ -2,4 +2,6 @@
     <string name="app_name">Movie</string>
     <string name="search_view_hint">제목을 입력해 주세요 </string>
     <string name="add_post">포스트를 추가해 주세요</string>
+    <string name="add_to_favoritesTextView">Add To Favorites</string>
+    <string name="overviewTextView">Overview</string>
 </resources>
