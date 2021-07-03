@@ -13,3 +13,15 @@
 .externalNativeBuild
 .cxx
 local.properties
+google-services.json
+src/main/java/com/example/movie/adapters/ThemeManager.kt
+src/main/java/com/example/movie/base/
+src/main/java/com/example/movie/models/Viedo/
+src/main/java/com/example/movie/ui/fragment/addMovie/AddDiscoverMovieFragment.kt
+src/main/java/com/example/movie/ui/fragment/addMovie/AddPopularMovieFragment.kt
+src/main/java/com/example/movie/untils/Constants.kt
+src/main/res/drawable/bg_btn.xml
+src/main/res/drawable/login_text.xml
+src/main/res/layout/fragment_add_discover_movie.xml
+src/main/res/layout/fragment_popular_add_movie.xml
+src/main/res/layout/fragment_top_add_movie.xml
