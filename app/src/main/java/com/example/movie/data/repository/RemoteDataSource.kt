@@ -1,4 +1,4 @@
-package com.example.movie.data
+package com.example.movie.data.repository
 
 import com.example.movie.data.network.ApiInterface
 import com.example.movie.models.Movie

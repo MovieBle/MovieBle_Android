@@ -1,4 +1,4 @@
-package com.example.movie.data
+package com.example.movie.data.repository
 
 import dagger.hilt.android.scopes.ActivityRetainedScoped
 import javax.inject.Inject
